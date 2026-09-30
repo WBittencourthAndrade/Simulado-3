@@ -54,6 +54,14 @@ export interface FCCGenerationResult {
 // responder claramente quando a variável não está configurada.
 export const DEFAULT_GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
 
+// Quando a chave do servidor é injetada pelo Netlify AI Gateway, as requisições devem ir
+// para GOOGLE_GEMINI_BASE_URL. Chaves próprias (inclusive as digitadas no app) usam a API do Google.
+export function geminiBaseUrl(apiKey: string): string {
+  const gatewayUrl = process.env.GOOGLE_GEMINI_BASE_URL;
+  if (gatewayUrl && apiKey === DEFAULT_GEMINI_API_KEY) return gatewayUrl.replace(/\/+$/, "");
+  return "https://generativelanguage.googleapis.com";
+}
+
 export async function generateFCCAnalysisAndQuestions(params: {
   theme: string;
   discipline?: string;
@@ -207,7 +215,7 @@ async function callGeminiApi(
 
   for (const model of uniqueModels) {
     try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+      const url = `${geminiBaseUrl(apiKey)}/v1beta/models/${model}:generateContent`;
       const payload = {
         contents: [
           {
@@ -223,7 +231,7 @@ async function callGeminiApi(
 
       const response = await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-goog-api-key": apiKey },
         body: JSON.stringify(payload),
       });
 

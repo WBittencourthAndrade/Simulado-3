@@ -1,10 +1,12 @@
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
-const databaseUrl = process.env.DATABASE_URL;
+// Na Netlify, o banco gerenciado (Netlify Database) expõe a conexão em NETLIFY_DB_URL.
+// DATABASE_URL continua aceito para desenvolvimento local.
+const databaseUrl = process.env.DATABASE_URL || process.env.NETLIFY_DB_URL;
 
 if (!databaseUrl) {
-  throw new Error("DATABASE_URL is required");
+  console.error("Nenhuma conexão de banco configurada (DATABASE_URL ou NETLIFY_DB_URL).");
 }
 
 const globalForDb = globalThis as typeof globalThis & {
