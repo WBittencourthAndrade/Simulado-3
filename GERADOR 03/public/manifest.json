@@ -1,0 +1,20 @@
+{
+  "name": "Especialista FCC — Nível Médio",
+  "short_name": "Especialista FCC",
+  "description": "Raio-X de incidência, questões inéditas, importação de cadernos em PDF e simulado interativo FCC.",
+  "id": "/especialista-fcc.html",
+  "start_url": "/especialista-fcc.html",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "background_color": "#020617",
+  "theme_color": "#020617",
+  "lang": "pt-BR",
+  "categories": ["education", "productivity"],
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

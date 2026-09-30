@@ -1,0 +1,2315 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Especialista FCC — Nível Médio (Versão HTML Permanente)</title>
+<meta name="description" content="Especialista FCC: Raio-X de incidência, questões inéditas com gabarito comentado, importação de cadernos em PDF e simulado interativo. Versão HTML permanente offline.">
+
+<!-- ===== Tela cheia / App Web (PWA) — iOS e Android ===== -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Especialista FCC">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="Especialista FCC">
+<meta name="theme-color" content="#020617">
+<meta name="format-detection" content="telephone=no">
+<!-- Manifest real (display: standalone) — arquivo /manifest.json -->
+<link rel="manifest" href="/manifest.json">
+<!-- Ícones PNG reais (o iOS não aceita SVG/data-URI em apple-touch-icon) -->
+<link rel="apple-touch-icon" href="/icons/icon-180.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="64x64" href="/icons/favicon-64.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+
+<style>
+:root {
+  --fcc-fs: 16px;
+  --fcc-ff: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; height: 100%; }
+body {
+  margin: 0;
+  min-height: 100%;
+  background: #f4f6fb;
+  color: #0b1220;
+  font-family: var(--fcc-ff);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+/* Em modo App instalado (tela cheia), respeita o topo do aparelho (notch / status bar translúcida) */
+@media (display-mode: standalone), (display-mode: fullscreen) {
+  .app-header { padding-top: env(safe-area-inset-top); }
+  body { overscroll-behavior: none; }
+}
+/* Reforço para iOS (navigator.standalone): a classe é aplicada via JS no boot */
+html.is-standalone .app-header { padding-top: env(safe-area-inset-top); }
+html.is-standalone body { overscroll-behavior: none; }
+.fcc-text {
+  font-family: var(--fcc-ff);
+  font-size: var(--fcc-fs);
+  line-height: 1.7;
+  text-align: justify;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  letter-spacing: -0.005em;
+}
+button { font-family: inherit; cursor: pointer; }
+input, select, textarea { font-family: inherit; }
+a { color: inherit; }
+
+/* ---------- Header ---------- */
+.app-header { position: sticky; top: 0; z-index: 40; background: #020617; color: #fff; box-shadow: 0 10px 30px rgba(2,6,23,.18); }
+.gold-line { height: 3px; background: linear-gradient(90deg,#c9a227 0%,#e9c659 25%,#c9a227 50%,#8a6d1b 100%); }
+.header-inner { max-width: 72rem; margin: 0 auto; padding: 0 16px; display: flex; align-items: center; justify-content: space-between; height: 64px; gap: 12px; }
+.brand { display: flex; align-items: center; gap: 10px; background: none; border: 0; padding: 0; text-align: left; }
+.brand-logo { width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg,#2563eb,#4338ca); display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 22px rgba(37,99,235,.35); font-size: 18px; }
+.brand-title { font-size: 15px; font-weight: 800; letter-spacing: -.02em; }
+.brand-title span { color: #e9c659; font-weight: 900; }
+.brand-sub { font-size: 10px; color: #94a3b8; margin-top: 2px; }
+.header-actions { display: flex; align-items: center; gap: 8px; }
+
+/* Font control */
+.font-ctrl { display: flex; align-items: center; gap: 2px; border: 1px solid #1e293b; border-radius: 12px; padding: 2px; background: rgba(15,23,42,.6); }
+.font-ctrl button { width: 32px; height: 32px; border: 0; background: none; color: #cbd5e1; border-radius: 9px; font-weight: 800; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+.font-ctrl button:hover { background: rgba(255,255,255,.08); color: #fff; }
+.font-ctrl .size-label { min-width: 40px; text-align: center; font-size: 11px; font-weight: 800; color: #e2e8f0; font-variant-numeric: tabular-nums; }
+.font-ctrl .divider { width: 1px; height: 18px; background: #334155; margin: 0 3px; }
+
+.icon-btn { width: 38px; height: 38px; border-radius: 12px; border: 1px solid #1e293b; background: none; color: #cbd5e1; display: flex; align-items: center; justify-content: center; }
+.icon-btn:hover { background: rgba(255,255,255,.06); color: #fff; }
+.icon-btn .dot { position: absolute; width: 10px; height: 10px; border-radius: 99px; border: 2px solid #020617; background: #34d399; margin: -22px -22px 0 0; }
+
+.status-strip { background: rgba(15,23,42,.85); border-top: 1px solid rgba(30,41,59,.6); font-size: 11px; color: #94a3b8; display: none; }
+.status-strip .inner { max-width: 72rem; margin: 0 auto; padding: 6px 16px; display: flex; gap: 8px; align-items: center; }
+.pulse { width: 7px; height: 7px; border-radius: 99px; background: #34d399; animation: pulse 1.4s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+/* ---------- Layout ---------- */
+main { max-width: 72rem; margin: 0 auto; padding: 16px 12px 120px; }
+.section-gap > * + * { margin-top: 24px; }
+.card { background: #fff; border: 1px solid #e2e8f0; border-radius: 24px; box-shadow: 0 12px 30px rgba(148,163,184,.12); }
+.hero { position: relative; overflow: hidden; border-radius: 28px; background: #020617; color: #fff; padding: 22px 18px; border: 1px solid #1e293b; box-shadow: 0 24px 50px rgba(2,6,23,.28); }
+.hero:before { content: ""; position: absolute; inset: 0; background: radial-gradient(700px 260px at 85% -10%, rgba(37,99,235,.28), transparent 60%), radial-gradient(500px 240px at 0% 120%, rgba(201,162,39,.14), transparent 60%); }
+.hero > * { position: relative; }
+.pill { display: inline-flex; align-items: center; gap: 8px; border-radius: 999px; padding: 5px 12px; font-size: 11px; font-weight: 800; background: rgba(255,255,255,.06); border: 1px solid rgba(233,198,89,.32); color: #fde68a; }
+h1 { font-size: 26px; line-height: 1.15; font-weight: 900; letter-spacing: -.03em; margin: 12px 0 8px; }
+h1 .gold { color: #e9c659; }
+.hero p { color: #94a3b8; font-size: 13px; margin: 0; }
+.cmd-box { margin-top: 16px; background: rgba(30,41,59,.75); border: 1px solid rgba(59,130,246,.38); border-radius: 18px; padding: 14px 16px; font-size: 12px; color: #e2e8f0; line-height: 1.7; }
+.cmd-box .lbl { color: #60a5fa; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; font-size: 10px; display: block; margin-bottom: 4px; }
+.cmd-box code { color: #fcd34d; font-family: ui-monospace, monospace; font-size: 11px; }
+
+label.field-label { display: block; font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: .07em; color: #334155; margin-bottom: 6px; }
+input[type=text], select { width: 100%; padding: 13px 15px; border-radius: 16px; border: 2px solid #e2e8f0; background: #f8fafc; color: #0f172a; font-size: 14px; font-weight: 600; outline: none; }
+input[type=text]:focus, select:focus { border-color: #2563eb; background: #fff; box-shadow: 0 0 0 4px rgba(37,99,235,.12); }
+input[type=password] { width: 100%; padding: 11px 14px; border-radius: 13px; border: 1.5px solid #e2e8f0; background: #fff; font-family: ui-monospace, monospace; font-size: 12px; outline: none; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 9px; border: 0; border-radius: 17px; font-weight: 900; font-size: 13px; padding: 13px 20px; transition: .15s; }
+.btn:active { transform: scale(.985); }
+.btn-primary { color: #fff; background: linear-gradient(135deg,#1d4ed8,#4338ca); box-shadow: 0 16px 34px rgba(37,99,235,.28); }
+.btn-primary:hover { filter: brightness(1.07); }
+.btn-success { color: #fff; background: linear-gradient(135deg,#047857,#059669); box-shadow: 0 14px 30px rgba(5,150,105,.28); }
+.btn-ghost { background: #fff; border: 1.5px solid #e2e8f0; color: #334155; }
+.btn-ghost:hover { background: #f8fafc; }
+.btn-dark { background: #0f172a; color: #fff; }
+.btn-sm { padding: 9px 14px; font-size: 11px; border-radius: 13px; }
+.btn-full { width: 100%; }
+
+.q-btn-group { display: inline-flex; gap: 4px; background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 14px; padding: 4px; }
+.q-btn-group button { border: 0; background: none; padding: 8px 14px; border-radius: 10px; font-size: 12px; font-weight: 800; color: #64748b; }
+.q-btn-group button.active { background: #fff; color: #1d4ed8; box-shadow: 0 2px 8px rgba(15,23,42,.1); }
+
+/* ---------- Stage panels ---------- */
+.stage-head { padding: 18px 20px; color: #fff; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; border-radius: 24px 24px 0 0; }
+.stage-1 { background: linear-gradient(120deg,#0f172a,#1e3a8a 70%,#312e81); }
+.stage-3-head { background: linear-gradient(120deg,#064e3b,#059669 80%); }
+.stage-num { width: 32px; height: 32px; border-radius: 11px; background: rgba(233,198,89,.22); border: 1px solid rgba(233,198,89,.45); color: #fde68a; font-weight: 900; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+.stage-title { font-size: 16px; font-weight: 900; letter-spacing: -.02em; }
+.stage-kicker { font-size: 10px; text-transform: uppercase; letter-spacing: .14em; font-weight: 800; color: #93c5fd; }
+.badge { font-size: 10px; font-weight: 900; padding: 5px 11px; border-radius: 999px; text-transform: uppercase; letter-spacing: .05em; }
+.badge-red { background: rgba(244,63,94,.18); color: #fecdd3; border: 1px solid rgba(244,63,94,.4); }
+.badge-amber { background: rgba(245,158,11,.18); color: #fde68a; border: 1px solid rgba(245,158,11,.4); }
+.badge-blue { background: rgba(59,130,246,.2); color: #bfdbfe; border: 1px solid rgba(59,130,246,.4); }
+.badge-green { background: #059669; color: #fff; }
+.badge-grey { background: #e2e8f0; color: #334155; }
+.badge-purple { background: #ede9fe; color: #6d28d9; border: 1px solid #ddd6fe; }
+
+.grid-2 { display: grid; grid-template-columns: 1fr; gap: 14px; }
+.grid-3 { display: grid; grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 780px) {
+  .grid-2 { grid-template-columns: 1fr 1fr; }
+  .grid-3 { grid-template-columns: repeat(3,1fr); }
+}
+.panel { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 18px; padding: 16px; }
+.panel h4 { margin: 0 0 10px; font-size: 13px; font-weight: 900; display: flex; gap: 8px; align-items: center; }
+.panel ul { margin: 0; padding-left: 18px; }
+.panel li { font-size: 12px; color: #334155; margin-bottom: 5px; }
+
+.trap-card { background: rgba(254,243,199,.7); border: 1px solid #fde68a; border-radius: 18px; padding: 14px; }
+.trap-card .t { font-size: 12px; font-weight: 900; color: #78350f; display: flex; gap: 7px; align-items: flex-start; }
+.trap-card .d { font-size: 11.5px; color: #92400e; line-height: 1.65; text-align: justify; margin-top: 6px; }
+.trap-card .ex { font-size: 11px; background: rgba(255,255,255,.85); border: 1px solid #fde68a; padding: 8px; border-radius: 11px; margin-top: 8px; font-family: ui-monospace, monospace; color: #78350f; }
+
+.tip-card { background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 18px; padding: 15px; font-size: 12.5px; color: #064e3b; }
+.tip-card strong { display: block; margin-bottom: 3px; color: #065f46; }
+
+/* ---------- Questions ---------- */
+.q-card { overflow: hidden; }
+.q-head { background: #f8fafc; border-bottom: 1px solid #e2e8f0; padding: 13px 18px; display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+.q-num { font-size: 11px; font-weight: 900; background: #0f172a; color: #fff; padding: 5px 11px; border-radius: 9px; }
+.q-disc { font-size: 11px; font-weight: 800; color: #475569; }
+.opt { display: flex; gap: 11px; align-items: flex-start; padding: 14px 15px; border: 1.5px solid #e2e8f0; border-radius: 16px; background: #fff; font-size: 14px; transition: .12s; position: relative; }
+.opt:hover { background: #f8fafc; }
+.opt .letter { width: 28px; height: 28px; border-radius: 999px; background: #f1f5f9; color: #475569; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; flex-shrink: 0; }
+.opt .txt { flex: 1; line-height: 1.65; }
+.opt.eliminated { text-decoration: line-through; opacity: .5; filter: grayscale(.7); }
+.opt.correct { border-color: #10b981; background: rgba(236,253,245,.85); color: #064e3b; font-weight: 500; box-shadow: 0 0 0 1px #10b981; }
+.opt.correct .letter { background: #059669; color: #fff; }
+.opt.wrong { border-color: #f43f5e; background: rgba(255,241,242,.85); color: #881337; font-weight: 500; box-shadow: 0 0 0 1px #f43f5e; }
+.opt.wrong .letter { background: #e11d48; color: #fff; }
+.opt.dim { background: #f8fafc; color: #94a3b8; }
+.opt.dim .letter { background: #e2e8f0; color: #64748b; }
+.opt-stack > * + * { margin-top: 10px; }
+
+.strike-btn { border: 0; background: none; color: #94a3b8; padding: 5px; border-radius: 8px; flex-shrink: 0; }
+.strike-btn:hover { background: #e2e8f0; color: #475569; }
+
+.feedback-line { font-size: 11.5px; color: #64748b; }
+.feedback-line.ok { color: #047857; font-weight: 900; }
+.feedback-line.no { color: #be123c; font-weight: 900; }
+
+.found-box { background: #fff; border: 1px solid #a7f3d0; border-left: 4px solid #059669; border-radius: 14px; padding: 13px 15px; }
+.found-box .k { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .08em; color: #065f46; }
+.found-box .v { font-family: ui-monospace, "SF Mono", monospace; font-size: 12px; color: #0f172a; line-height: 1.75; text-align: justify; white-space: pre-line; margin-top: 6px; }
+.found-dev { display: inline-block; background: #047857; color: #fff; font-size: 11px; font-weight: 900; padding: 5px 11px; border-radius: 9px; margin-bottom: 8px; }
+.mem-card { background: #fffbeb; border: 1px solid #fde68a; border-radius: 13px; padding: 11px 13px; font-size: 12px; color: #78350f; line-height: 1.7; text-align: justify; }
+
+.dist-item { padding: 12px 14px; border-radius: 13px; border: 1px solid #e2e8f0; background: #fff; font-size: 12px; line-height: 1.72; text-align: justify; }
+.dist-item.ok { background: #ecfdf5; border-color: #a7f3d0; color: #064e3b; }
+.dist-item .lb { font-weight: 900; padding: 2px 8px; border-radius: 6px; font-size: 10.5px; margin-right: 6px; background: #e2e8f0; color: #334155; }
+.dist-item.ok .lb { background: #059669; color: #fff; }
+
+/* ---------- Simulado ---------- */
+.sim-bar { background: #020617; color: #fff; border: 1px solid #1e293b; border-radius: 24px; padding: 15px 17px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; box-shadow: 0 22px 44px rgba(2,6,23,.25); }
+.timer-box { display: flex; align-items: center; gap: 9px; background: #0f172a; border: 1px solid #1e293b; padding: 8px 13px; border-radius: 16px; }
+.timer-val { font-family: ui-monospace, monospace; font-size: 19px; font-weight: 900; letter-spacing: .04em; }
+.timer-btn { border: 0; background: rgba(255,255,255,.07); color: #fbbf24; width: 29px; height: 29px; border-radius: 9px; display: flex; align-items: center; justify-content: center; }
+.bubbles { display: flex; flex-wrap: wrap; gap: 6px; }
+.bubble { width: 33px; height: 33px; border-radius: 10px; border: 1px solid #e2e8f0; background: #f1f5f9; color: #475569; font-size: 11px; font-weight: 900; display: flex; align-items: center; justify-content: center; position: relative; }
+.bubble.answered { background: #dbeafe; color: #1e3a8a; border-color: #93c5fd; }
+.bubble.current { background: #2563eb; color: #fff; border-color: #1d4ed8; box-shadow: 0 0 0 2px #93c5fd; }
+.bubble.ok { background: #059669; color: #fff; border-color: #047857; }
+.bubble.no { background: #e11d48; color: #fff; border-color: #be123c; }
+.bubble .flag { position: absolute; top: -3px; right: -3px; width: 8px; height: 8px; border-radius: 99px; background: #fbbf24; }
+
+.pause-panel { background: #0f172a; color: #fff; border: 2px solid #fbbf24; border-radius: 24px; padding: 22px 20px; }
+.pause-panel h3 { margin: 6px 0 0; font-size: 21px; font-weight: 900; }
+.pause-panel p { color: #cbd5e1; font-size: 12.5px; line-height: 1.75; text-align: justify; }
+.pause-panel .lbl { color: #fcd34d; font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .12em; }
+
+.summary-card { background: #020617; color: #fff; border: 1px solid #1e293b; border-radius: 24px; padding: 20px 18px; }
+.summary-card .pct { font-size: 31px; font-weight: 900; color: #34d399; }
+.kpi { background: rgba(15,23,42,.8); border: 1px solid #1e293b; border-radius: 14px; padding: 11px 13px; }
+.kpi .k { font-size: 9.5px; font-weight: 900; text-transform: uppercase; letter-spacing: .11em; color: #64748b; display: block; }
+.kpi .v { font-family: ui-monospace, monospace; font-size: 16px; font-weight: 900; color: #fff; }
+
+/* ---------- History / Errors / Stats ---------- */
+.hist-card { padding: 0; overflow: hidden; }
+.hist-main { padding: 16px; display: flex; flex-direction: column; gap: 13px; cursor: pointer; }
+@media (min-width: 860px) {
+  .hist-main { flex-direction: row; align-items: center; justify-content: space-between; }
+}
+.hist-main:hover { background: #f8fafc; }
+.hist-title { font-size: 15.5px; font-weight: 900; color: #0f172a; line-height: 1.35; }
+.hist-meta { font-size: 11px; color: #64748b; display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; margin-top: 4px; }
+.tag { font-size: 9.5px; font-weight: 900; padding: 3px 9px; border-radius: 7px; letter-spacing: .03em; }
+.tag-pdf { background: #ede9fe; color: #6d28d9; border: 1px solid #ddd6fe; }
+.tag-ia { background: #dbeafe; color: #1d4ed8; border: 1px solid #bfdbfe; }
+.tag-done { background: #d1fae5; color: #047857; border: 1px solid #a7f3d0; }
+.tag-progress { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+.hist-actions { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; }
+.hist-detail { border-top: 1px solid #e2e8f0; background: #f8fafc; padding: 16px; }
+
+.bar-row { margin-bottom: 14px; }
+.bar-row .top { display: flex; justify-content: space-between; font-size: 11.5px; font-weight: 800; color: #334155; margin-bottom: 5px; }
+.bar-track { height: 11px; background: #f1f5f9; border-radius: 99px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 99px; transition: width .5s; }
+
+.stat-tile { background: #fff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 18px; box-shadow: 0 10px 26px rgba(148,163,184,.1); }
+.stat-tile .k { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: .11em; color: #64748b; }
+.stat-tile .v { font-size: 31px; font-weight: 900; letter-spacing: -.03em; margin: 6px 0 3px; }
+
+/* ---------- Upload ---------- */
+.drop-zone { border: 2px dashed #cbd5e1; border-radius: 26px; padding: 34px 18px; text-align: center; background: rgba(248,250,252,.6); transition: .15s; cursor: pointer; }
+.drop-zone:hover, .drop-zone.over { border-color: #2563eb; background: rgba(239,246,255,.65); }
+.drop-icon { width: 64px; height: 64px; border-radius: 20px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; margin: 0 auto; }
+
+/* ---------- Bottom nav (mobile) ---------- */
+.bottom-nav { position: fixed; left: 0; right: 0; bottom: 0; z-index: 45; background: rgba(255,255,255,.96); backdrop-filter: blur(10px); border-top: 1px solid #e2e8f0; box-shadow: 0 -8px 30px rgba(15,23,42,.08); }
+.bottom-nav .inner { display: flex; justify-content: space-around; padding: 8px 4px calc(8px + env(safe-area-inset-bottom)); }
+.nav-btn { border: 0; background: none; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 6px 10px; min-width: 62px; color: #64748b; border-radius: 12px; }
+.nav-btn.active { color: #1d4ed8; }
+.nav-btn .ic { padding: 5px; border-radius: 9px; font-size: 18px; line-height: 1; }
+.nav-btn.active .ic { background: #eff6ff; }
+.nav-btn .lb { font-size: 9.5px; font-weight: 800; }
+
+/* ---------- Modals / Toast ---------- */
+.modal-overlay { position: fixed; inset: 0; z-index: 60; background: rgba(2,6,23,.72); backdrop-filter: blur(3px); display: flex; align-items: center; justify-content: center; padding: 14px; }
+.modal { background: #fff; border-radius: 24px; max-width: 560px; width: 100%; max-height: 90vh; overflow-y: auto; border: 1px solid #e2e8f0; box-shadow: 0 30px 70px rgba(2,6,23,.4); animation: pop .18s ease-out; }
+@keyframes pop { from { opacity: 0; transform: scale(.96) translateY(6px); } to { opacity: 1; transform: none; } }
+.modal-head { background: #020617; color: #fff; padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; }
+.modal-body { padding: 18px; }
+.modal-foot { background: #f8fafc; padding: 13px 18px; display: flex; gap: 9px; justify-content: flex-end; border-top: 1px solid #e2e8f0; }
+.toast { position: fixed; bottom: 88px; left: 50%; transform: translateX(-50%); background: #0f172a; color: #fff; padding: 11px 18px; border-radius: 14px; font-size: 12.5px; font-weight: 700; z-index: 80; box-shadow: 0 18px 40px rgba(2,6,23,.35); animation: pop .2s; max-width: 92vw; }
+
+.spinner { width: 17px; height: 17px; border: 2.5px solid rgba(255,255,255,.35); border-top-color: #fff; border-radius: 99px; animation: spin .8s linear infinite; }
+.spinner-dark { border-color: rgba(37,99,235,.25); border-top-color: #2563eb; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.fade-in { animation: fade .35s ease-out both; }
+@keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.progress-track { height: 8px; background: #e2e8f0; border-radius: 99px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg,#1d4ed8,#4338ca); border-radius: 99px; animation: slide 1.5s ease-in-out infinite alternate; }
+@keyframes slide { from { width: 30%; } to { width: 82%; } }
+
+.alert { border-radius: 16px; padding: 13px 15px; font-size: 12.5px; display: flex; gap: 10px; line-height: 1.7; text-align: justify; }
+.alert-error { background: #fff1f2; border: 1px solid #fecdd3; color: #9f1239; }
+.alert-info { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e3a8a; }
+.alert-warn { background: #fffbeb; border: 1px solid #fde68a; color: #78350f; }
+.alert-ok { background: #ecfdf5; border: 1px solid #a7f3d0; color: #064e3b; }
+
+.empty-state { background: #fff; border: 1px solid #e2e8f0; border-radius: 24px; padding: 34px 20px; text-align: center; }
+.divider-soft { border: 0; border-top: 1px solid #f1f5f9; margin: 18px 0; }
+.mono { font-family: ui-monospace, monospace; }
+.nowrap { white-space: nowrap; }
+.hidden { display: none !important; }
+.small-note { font-size: 10.5px; color: #94a3b8; line-height: 1.65; }
+.footer { background: #020617; color: #64748b; padding: 20px 16px; font-size: 11px; border-top: 1px solid #1e293b; }
+.footer .inner { max-width: 72rem; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 10px; justify-content: space-between; }
+
+/* Banner de tela cheia / instalação */
+.fs-banner { position: fixed; left: 12px; right: 12px; bottom: calc(80px + env(safe-area-inset-bottom)); z-index: 70; animation: pop .25s; }
+.fs-inner { max-width: 640px; margin: 0 auto; background: #0f172a; color: #fff; border: 1px solid #1e293b; border-radius: 18px; padding: 12px 14px; display: flex; align-items: center; gap: 12px; justify-content: space-between; box-shadow: 0 18px 44px rgba(2,6,23,.5); }
+.fs-txt { display: flex; flex-direction: column; min-width: 0; }
+.fs-txt strong { font-size: 13px; font-weight: 900; }
+.fs-txt span { font-size: 11px; color: #94a3b8; }
+.fs-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.fs-go { border: 0; border-radius: 12px; padding: 9px 16px; font-size: 12px; font-weight: 900; color: #fff; background: linear-gradient(135deg,#1d4ed8,#4338ca); }
+.fs-x { border: 0; background: rgba(255,255,255,.08); color: #cbd5e1; width: 32px; height: 32px; border-radius: 10px; font-size: 13px; }
+/* Em app instalado, esconde o botão de tela cheia (já está em tela cheia) */
+html.is-standalone #fsBtn { display: none; }
+
+/* =====================================================================
+   RESPONSIVIDADE (MOBILE-FIRST) — evita scroll horizontal e estouro
+   ===================================================================== */
+html, body { overflow-x: hidden; max-width: 100%; }
+.fcc-text, .opt .txt, .found-box .v, .hist-title, .dist-item, .trap-card .d,
+.q-head, .sim-bar, .brand-title, .modal, .card, .hist-meta { overflow-wrap: break-word; word-break: break-word; }
+
+/* CTA empilhado em telas pequenas */
+.row-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+.nav-btn .lb { max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+@media (max-width: 700px) {
+  /* Evita zoom automático do iOS ao focar campos */
+  input[type=text], input[type=password], select, textarea { font-size: 16px !important; }
+
+  .header-inner { height: auto; padding: 9px 11px; gap: 8px; }
+  .brand { min-width: 0; flex: 1; gap: 8px; }
+  .brand-logo { width: 33px; height: 33px; font-size: 16px; border-radius: 11px; }
+  .brand-title { font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .brand-sub { display: none; }
+  .brand > div:last-child { min-width: 0; }
+  .header-actions { gap: 5px; flex-shrink: 0; }
+  .icon-btn { width: 33px; height: 33px; border-radius: 11px; font-size: 15px; }
+  .font-ctrl { padding: 2px; }
+  .font-ctrl button { width: 27px; height: 27px; font-size: 11px; }
+  .font-ctrl .size-label { min-width: 29px; font-size: 9.5px; }
+  .font-ctrl .divider { height: 15px; margin: 0 1px; }
+  .status-strip .inner { padding: 5px 11px; }
+
+  main { padding: 12px 10px 122px; }
+  h1 { font-size: 21px; letter-spacing: -.02em; }
+  .hero { padding: 18px 14px; border-radius: 21px; }
+  .hero p { font-size: 12.5px; }
+  .cmd-box { padding: 12px 13px; margin-top: 13px; }
+  .card { border-radius: 20px; }
+
+  .stage-head { padding: 14px; border-radius: 20px 20px 0 0; gap: 9px; }
+  .stage-title { font-size: 14px; }
+  .stage-num { width: 28px; height: 28px; font-size: 12px; }
+
+  .q-head { padding: 11px 13px; }
+  .opt { padding: 12px; gap: 9px; font-size: 13.5px; border-radius: 14px; }
+  .opt .letter { width: 25px; height: 25px; font-size: 10.5px; }
+  .found-box .v { font-size: 11.5px; }
+
+  .row-actions { flex-direction: column; align-items: stretch; gap: 11px; }
+  .row-actions > .btn { width: 100%; }
+  .row-actions .q-btn-group { justify-content: space-between; width: 100%; }
+  .row-actions .q-btn-group button { flex: 1; padding: 10px 6px; }
+
+  /* Simulado: empilha título e controles para nunca sobrepor o cronômetro */
+  .sim-bar { padding: 13px; gap: 12px; border-radius: 20px; flex-direction: column; align-items: stretch; flex-wrap: nowrap; }
+  .sim-bar-title { width: 100%; }
+  .sim-bar-controls { width: 100%; justify-content: space-between; gap: 8px; padding-top: 11px; border-top: 1px solid #1e293b; }
+  .sim-bar-controls .timer-box { flex: 1 1 auto; justify-content: center; }
+  .sim-bar-controls .btn { flex: 1 1 100%; justify-content: center; }
+  .timer-val { font-size: 18px; }
+  .timer-box { padding: 8px 12px; }
+  .summary-card { padding: 17px 14px; border-radius: 20px; }
+  .summary-card .pct { font-size: 27px; }
+  .pause-panel { padding: 18px 14px; border-radius: 20px; }
+  .pause-panel h3 { font-size: 18px; }
+  .pause-panel .btn { width: 100%; justify-content: center; }
+  .pause-panel > div:last-child { flex-direction: column; align-items: stretch; }
+  .summary-card > div:last-child { flex-direction: column; align-items: stretch; gap: 9px; }
+  .summary-card > div:last-child .btn { width: 100%; justify-content: center; }
+  .sim-bar .btn { flex: 1 1 100%; justify-content: center; }
+
+  .stat-tile { padding: 15px; border-radius: 18px; }
+  .stat-tile .v { font-size: 26px; }
+
+  .hist-main { padding: 14px; }
+  .hist-actions { padding: 0 14px 14px !important; }
+  .hist-actions .btn { flex: 1 1 calc(50% - 7px); justify-content: center; }
+  .hist-detail { padding: 14px; }
+
+  .drop-zone { padding: 26px 12px; border-radius: 21px; }
+  .drop-icon { width: 56px; height: 56px; border-radius: 18px; }
+
+  .modal { border-radius: 20px; max-height: 88vh; }
+  .modal-body { padding: 15px; }
+  .modal-foot { padding: 12px 15px; }
+  .modal-foot .btn { flex: 1; justify-content: center; }
+
+  .btn { padding: 12px 16px; font-size: 12.5px; border-radius: 15px; }
+  .btn-sm { padding: 9px 12px; font-size: 11px; }
+
+  .bottom-nav .inner { padding: 6px 2px calc(6px + env(safe-area-inset-bottom)); gap: 0; }
+  .nav-btn { min-width: 0; flex: 1; padding: 5px 2px; }
+  .nav-btn .ic { font-size: 15.5px; padding: 4px; }
+  .nav-btn .lb { font-size: 8.5px; letter-spacing: -.01em; }
+
+  .toast { bottom: calc(76px + env(safe-area-inset-bottom)); width: calc(100vw - 28px); text-align: center; }
+  .footer { padding: 16px 12px; }
+  .footer .inner { flex-direction: column; gap: 6px; }
+  .divider-soft { margin: 14px 0; }
+}
+
+@media (max-width: 380px) {
+  .brand-title { font-size: 12px; }
+  .brand-logo { width: 30px; height: 30px; font-size: 14px; }
+  .icon-btn { width: 30px; height: 30px; }
+  .font-ctrl button { width: 25px; height: 25px; font-size: 10px; }
+  .nav-btn .lb { font-size: 7.8px; }
+  .nav-btn .ic { font-size: 14px; }
+  h1 { font-size: 19px; }
+}
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="gold-line"></div>
+  <div class="header-inner">
+    <button class="brand" onclick="go('generator')">
+      <div class="brand-logo">📘</div>
+      <div>
+        <div class="brand-title">Especialista <span>FCC</span></div>
+        <div class="brand-sub">Raio-X & Questões Inéditas • Versão HTML Permanente</div>
+      </div>
+    </button>
+    <div class="header-actions">
+      <div class="font-ctrl" title="Ajustar fonte">
+        <button onclick="setFont(-1)" title="Diminuir fonte">A−</button>
+        <div class="size-label" id="fontSizeLabel">16px</div>
+        <button onclick="setFont(1)" title="Aumentar fonte">A+</button>
+        <div class="divider"></div>
+        <button onclick="toggleFamily()" id="fontFamilyBtn" title="Alternar serifada / sem serifa" style="font-family:Georgia,serif;font-size:14px;">Aa</button>
+      </div>
+      <button class="icon-btn" id="fsBtn" onclick="enterFullscreen()" title="Abrir em tela cheia">⛶</button>
+      <button class="icon-btn" onclick="openHelp()" title="Diretrizes FCC">❓</button>
+      <button class="icon-btn" onclick="openSettings()" title="Configurações">⚙️</button>
+    </div>
+  </div>
+  <div class="status-strip" id="statusStrip">
+    <div class="inner">
+      <span class="pulse"></span>
+      <span id="statusText"></span>
+    </div>
+  </div>
+</header>
+
+<main id="main"></main>
+
+<nav class="bottom-nav">
+  <div class="inner" id="navInner"></div>
+</nav>
+
+<div id="modalRoot"></div>
+<div id="toastRoot"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>
+/* =====================================================================
+   ESPECIALISTA FCC — VERSÃO HTML PERMANENTE (arquivo único, offline)
+   Dados: localStorage | IA: Gemini API direto no navegador | PDF: pdf.js
+   ===================================================================== */
+
+const LS = {
+  get(k, d) { try { const v = JSON.parse(localStorage.getItem(k)); return v === null ? d : v; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+  del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+};
+
+/* Chave padrão do usuário (pode ser substituída em ⚙️ Ajustes).
+   Fica embutida neste arquivo — recomendado restringir por domínio no Google AI Studio. */
+const DEFAULT_API_KEY = "AQ.Ab8RN6IepmaG73Akksh3LBiuGaq09LCIyo_oF8zzC5y8WENySg";
+
+const NAV = [
+  { id: 'generator', label: 'Gerador', short: 'Gerar', ic: '✨' },
+  { id: 'pdf', label: 'Importar PDF', short: 'PDF', ic: '📄' },
+  { id: 'erros', label: 'Caderno de Erros', short: 'Erros', ic: '⚠️' },
+  { id: 'stats', label: 'Desempenho', short: 'Desempenho', ic: '📊' },
+  { id: 'history', label: 'Histórico', short: 'Histórico', ic: '🗂️' }
+];
+
+let state = {
+  tab: 'generator',
+  sessions: LS.get('fcc_sessions_v1', []),
+  settings: LS.get('fcc_settings_v1', { apiKey: '', model: 'gemini-3.5-flash-lite', fontSize: 16, fontFamily: 'sans' }),
+  gen: null,           // resultado da geração (raio-x + questões)
+  loading: false,
+  loadingStep: 1,
+  error: null,
+  sim: null,           // { sessionId, currentIdx, elapsed, paused, finished, flagged:{} }
+  histExpanded: {},
+  importing: false,
+  importMsg: '',
+  expandedError: {}
+};
+
+const LETTERS = ['A', 'B', 'C', 'D', 'E'];
+
+function saveSessions() { LS.set('fcc_sessions_v1', state.sessions); }
+function saveSettings() { LS.set('fcc_settings_v1', state.settings); applyFont(); }
+function uid() { return Date.now() + Math.floor(Math.random() * 10000); }
+
+/* ---------------- Font controls ---------------- */
+function applyFont() {
+  document.documentElement.style.setProperty('--fcc-fs', state.settings.fontSize + 'px');
+  document.documentElement.style.setProperty('--fcc-ff',
+    state.settings.fontFamily === 'serif'
+      ? 'Georgia, Cambria, "Times New Roman", serif'
+      : 'ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif');
+  const lbl = document.getElementById('fontSizeLabel');
+  if (lbl) lbl.textContent = state.settings.fontSize + 'px';
+}
+function setFont(delta) {
+  state.settings.fontSize = Math.min(21, Math.max(13, state.settings.fontSize + delta));
+  saveSettings();
+}
+function toggleFamily() {
+  state.settings.fontFamily = state.settings.fontFamily === 'serif' ? 'sans' : 'serif';
+  saveSettings();
+  toast(state.settings.fontFamily === 'serif' ? 'Fonte alterada para serifada (estilo livro de lei)' : 'Fonte alterada para sem serifa');
+}
+
+/* ---------------- Toast ---------------- */
+function toast(msg, ms = 2600) {
+  const root = document.getElementById('toastRoot');
+  root.innerHTML = '<div class="toast">' + esc(msg) + '</div>';
+  setTimeout(() => { root.innerHTML = ''; }, ms);
+}
+
+/* ---------------- Utils ---------------- */
+function esc(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+function fmtTime(t) {
+  const m = Math.floor(t / 60), s = t % 60;
+  return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+}
+function fmtDate(d) {
+  try { return new Date(d).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }); }
+  catch (e) { return ''; }
+}
+
+/* ---------------- Navigation ---------------- */
+function go(tab) {
+  state.tab = tab;
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderNav() {
+  document.getElementById('navInner').innerHTML = NAV.map(n => `
+    <button class="nav-btn ${state.tab === n.id || (state.tab === 'simulado' && n.id === 'pdf') ? 'active' : ''}" onclick="go('${n.id}')">
+      <span class="ic">${n.ic}</span><span class="lb">${n.short}</span>
+    </button>`).join('') + `
+    <button class="nav-btn" onclick="openSettings()">
+      <span class="ic">⚙️</span><span class="lb">Ajustes</span>
+    </button>`;
+}
+
+function renderStatus() {
+  const strip = document.getElementById('statusStrip');
+  const a = allAnswers();
+  if (a.length === 0) { strip.style.display = 'none'; return; }
+  strip.style.display = 'block';
+  const ok = a.filter(x => x.isCorrect).length;
+  document.getElementById('statusText').innerHTML =
+    '<strong style="color:#e2e8f0">' + a.length + '</strong> questões resolvidas • Taxa de acerto: ' +
+    '<strong style="color:#34d399">' + Math.round(ok / a.length * 100) + '%</strong> • Padrão FCC Nível Médio';
+}
+
+/* ---------------- Data helpers ---------------- */
+function allAnswers() {
+  const out = [];
+  state.sessions.forEach(s => (s.answers || []).forEach(a => {
+    const q = (s.questions || []).find(x => x.id === a.qid);
+    if (q) out.push({ ...a, question: q, session: s });
+  }));
+  return out;
+}
+function sessionAnswers(s) { return (s.answers || []).filter(a => (s.questions || []).some(q => q.id === a.qid)); }
+function sessionStats(s) {
+  const ans = sessionAnswers(s);
+  const total = (s.questions || []).length;
+  const correct = ans.filter(a => a.isCorrect).length;
+  return { total, answered: ans.length, correct, accuracy: ans.length ? Math.round(correct / ans.length * 100) : 0, done: total > 0 && ans.length >= total };
+}
+
+/* =====================================================================
+   IA — GEMINI (direto do navegador)
+   ===================================================================== */
+const SYSTEM_PROMPT = `Você é o Especialista Sênior em Bancas de Concursos Públicos, com foco exclusivo na Fundação Carlos Chagas (FCC) para Nível Médio (Técnico Judiciário de TRTs, TREs, TRFs, TJs e Administrativos).
+
+Fluxo obrigatório em 3 etapas:
+ETAPA 1 — RAIO-X FCC: frequência (Alta/Média/Baixa nos últimos 3 a 5 anos), padrão típico de cobrança (formato e artigos/regras mais visados), mapeamento de pegadinhas comuns e uma dica de ouro.
+ETAPA 2 — QUESTÕES INÉDITAS: nível médio rigoroso, 5 alternativas (A–E) balanceadas, tom sóbrio e formal da FCC ("Considere que...", "Segundo a disciplina legal..."), distratores verossímeis (nunca absurdos).
+ETAPA 3 — GABARITO COMENTADO: fundamento direto (dispositivo + transcrição literal, ou "Regra:" em Português/Raciocínio Lógico) e explicação alternativa por alternativa dizendo O MOTIVO do erro.
+
+É PROIBIDO inventar número de artigo, inciso, súmula ou texto de lei. Se não tiver certeza da redação literal, use "Regra:" em vez de fingir transcrição.
+Distribua o gabarito entre A, B, C, D e E. Cada questão trata de um ponto DIFERENTE do tema.
+Responda estritamente em JSON válido, sem markdown.`;
+
+function buildGenPrompt(theme, discipline, exam, count) {
+  return `Tema: "${theme}"
+Disciplina: "${discipline}"
+Concurso/Órgão alvo: "${exam}"
+Quantidade de questões inéditas: ${count}
+
+Todas as ${count} questões devem ser ESTRITAMENTE sobre o tema informado, cada uma abordando um ponto distinto.
+
+Retorne estritamente JSON (sem markdown):
+{
+  "rayX": {
+    "frequency": "Alta" | "Média" | "Baixa",
+    "typicalPattern": { "formatPreference": "...", "targetArticles": ["..."], "styleSummary": "..." },
+    "trapMapping": [ { "trapName": "...", "description": "...", "example": "..." } ],
+    "seniorTip": "..."
+  },
+  "questions": [
+    {
+      "statement": "Enunciado completo...",
+      "options": { "A": "...", "B": "...", "C": "...", "D": "...", "E": "..." },
+      "correctOption": "A",
+      "discipline": "...",
+      "fccTrapType": "tipo de pegadinha",
+      "foundation": {
+        "dispositivo": "Art. X, § Y, da Lei nº Z/AAAA (ou nome da regra)",
+        "fonte": "Lei nº Z/AAAA (ou Gramática normativa / Lógica proposicional)",
+        "transcricao": "Transcrição literal do trecho que sustenta o gabarito (use (... ) para omissões). Nunca invente textos legais.",
+        "explicacao": "Aplicação do texto ao caso do enunciado e à alternativa correta.",
+        "dicaMemorizacao": "Macete curto."
+      },
+      "distractorAnalysis": {
+        "A": "CORRETA/INCORRETA. O erro está em «trecho»; o correto seria «termo» (dispositivo).",
+        "B": "...", "C": "...", "D": "...", "E": "..."
+      }
+    }
+  ]
+}`;
+}
+
+function buildParsePrompt(chunk, startNumber) {
+  return `Você é especialista em cadernos de provas de concursos (FCC, nível médio).
+O TEXTO abaixo é um trecho de um caderno em PDF. Extraia TODAS as questões objetivas com 5 alternativas (A–E).
+
+Regras:
+1. "statement": enunciado completo sem as alternativas.
+2. "options": texto de cada alternativa SEM a letra.
+3. "correctOption": use estritamente o gabarito do documento (mesmo que esteja em seção final "GABARITO OFICIAL"); sem gabarito, resolva com precisão técnica.
+4. "foundation": dispositivo, fonte, transcricao, explicacao e dicaMemorizacao que validam o gabarito.
+5. "distractorAnalysis": para cada alternativa, o motivo do acerto (correta) ou o motivo EXATO do erro (incorretas).
+6. "discipline": a matéria. "fccTrapType": tipo de pegadinha.
+Início da numeração: ${startNumber}.
+
+TEXTO:
+"""
+${chunk}
+"""
+
+Retorne estritamente JSON:
+{
+  "title": "Título do caderno/concurso ou ''",
+  "questions": [ { "orderIndex": ${startNumber}, "statement": "...", "options": {"A":"...","B":"...","C":"...","D":"...","E":"..."}, "correctOption": "A", "discipline": "...", "fccTrapType": "...",
+    "foundation": { "dispositivo": "...", "fonte": "...", "transcricao": "...", "explicacao": "...", "dicaMemorizacao": "..." },
+    "distractorAnalysis": { "A": "...", "B": "...", "C": "...", "D": "...", "E": "..." } } ]
+}`;
+}
+
+function stripFences(t) {
+  return String(t || '').trim().replace(/^```(?:json)?/i, '').replace(/```$/, '').trim();
+}
+function normLetter(v) {
+  if (v === null || v === undefined) return null;
+  const s = String(v).toUpperCase().trim();
+  const m = s.match(/[A-E]/);
+  return m ? m[0] : null;
+}
+
+async function callGemini(prompt, systemPrompt) {
+  const key = (state.settings.apiKey || '').trim();
+  if (!key) throw new Error('Chave da API Gemini não configurada. Abra "Ajustes" e cole sua chave.');
+  const models = [...new Set([state.settings.model || 'gemini-3.5-flash-lite', 'gemini-3.5-flash-lite', 'gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-3.8-flash'])];
+  let lastErr = '';
+  for (const model of models) {
+    try {
+      const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent?key=' + encodeURIComponent(key), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: systemPrompt || SYSTEM_PROMPT }] },
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.3, maxOutputTokens: 32768, responseMimeType: 'application/json' }
+        })
+      });
+      if (!res.ok) {
+        lastErr = 'Modelo ' + model + ' respondeu ' + res.status;
+        if (res.status === 401 || res.status === 403) throw new Error('Chave da API inválida ou sem permissão.');
+        continue;
+      }
+      const data = await res.json();
+      const parts = (data && data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts) || [];
+      const text = parts.filter(p => !p.thought && typeof p.text === 'string').map(p => p.text).join('');
+      if (text) return { text, model };
+    } catch (e) {
+      if (String(e.message).includes('Chave')) throw e;
+      lastErr = String(e.message || e);
+    }
+  }
+  throw new Error('Não foi possível obter resposta da IA: ' + (lastErr || 'verifique a chave e a conexão.'));
+}
+
+function parseJson(text) {
+  try { return JSON.parse(stripFences(text)); }
+  catch (e) {
+    const s = String(text || '').indexOf('{');
+    const en = String(text || '').lastIndexOf('}');
+    if (s >= 0 && en > s) { try { return JSON.parse(text.slice(s, en + 1)); } catch (e2) { return null; } }
+    return null;
+  }
+}
+
+function normalizeQuestion(q, idx, fallbackDiscipline, theme) {
+  if (!q) return null;
+  const statement = String(q.statement || q.enunciado || '').trim();
+  if (!statement) return null;
+
+  let options = { A: '', B: '', C: '', D: '', E: '' };
+  const rawOpt = q.options || q.alternativas;
+  if (rawOpt && typeof rawOpt === 'object' && !Array.isArray(rawOpt)) {
+    LETTERS.forEach(l => { options[l] = String(rawOpt[l] || rawOpt[l.toLowerCase()] || '').trim(); });
+  } else if (Array.isArray(rawOpt)) {
+    rawOpt.slice(0, 5).forEach((t, i) => {
+      options[LETTERS[i]] = String(t).replace(/^(\(?[A-E]\)?[\s.):\–—-]+)/i, '').trim();
+    });
+  }
+  if (!options.A || !options.E) return null;
+
+  const letter = normLetter(q.correctOption ?? q.gabarito ?? q.answer) || 'A';
+
+  let foundation = q.foundation && typeof q.foundation === 'object' ? {
+    dispositivo: String(q.foundation.dispositivo || '').trim(),
+    fonte: String(q.foundation.fonte || '').trim(),
+    transcricao: String(q.foundation.transcricao || '').trim(),
+    explicacao: String(q.foundation.explicacao || '').trim(),
+    dicaMemorizacao: String(q.foundation.dicaMemorizacao || '').trim()
+  } : { dispositivo: '', fonte: '', transcricao: '', explicacao: '', dicaMemorizacao: '' };
+
+  if (!foundation.transcricao) {
+    const legacy = String(q.directFoundation || q.fundamentacao || '').trim();
+    if (legacy) {
+      const i = legacy.indexOf(':');
+      foundation.dispositivo = (i > 0 && i < 140) ? legacy.slice(0, i).trim() : 'Fundamento da banca';
+      foundation.transcricao = (i > 0 && i < 140) ? legacy.slice(i + 1).trim() : legacy;
+      foundation.explicacao = String(q.explanation || q.comentario || '').trim();
+    }
+  }
+  if (!foundation.transcricao) foundation.transcricao = 'Gabarito oficial: Letra (' + letter + '). Conforme resolução e normas aplicáveis pela banca examinadora.';
+  if (!foundation.dispositivo) foundation.dispositivo = 'Fundamento da banca examinadora';
+
+  const rawDA = q.distractorAnalysis || {};
+  const distractorAnalysis = {};
+  LETTERS.forEach(l => {
+    const note = String(rawDA[l] || rawDA[l.toLowerCase()] || '').trim();
+    distractorAnalysis[l] = note || (l === letter
+      ? 'CORRETA conforme a legislação e o gabarito oficial do concurso.'
+      : 'INCORRETA segundo o gabarito oficial da banca examinadora.');
+  });
+
+  return {
+    id: uid() + idx,
+    orderIndex: idx + 1,
+    statement,
+    options,
+    correctOption: letter,
+    discipline: String(q.discipline || fallbackDiscipline || 'FCC Nível Médio'),
+    theme: String(q.theme || theme || ''),
+    fccTrapType: String(q.fccTrapType || 'Padrão FCC de Nível Médio'),
+    foundation,
+    directFoundation: composeFoundation(foundation),
+    distractorAnalysis
+  };
+}
+
+function composeFoundation(f) {
+  let out = '';
+  if (f.dispositivo) out += f.dispositivo;
+  if (f.fonte && f.fonte !== f.dispositivo) out += (out ? ' — ' : '') + f.fonte;
+  if (f.transcricao) out += (out ? '\n\n' : '') + f.transcricao;
+  if (f.explicacao) out += (out ? '\n\n' : '') + f.explicacao;
+  return out;
+}
+
+function normalizeRayX(r, theme) {
+  const obj = r && typeof r === 'object' ? r : {};
+  const tp = obj.typicalPattern || {};
+  return {
+    frequency: ['Alta', 'Média', 'Baixa'].includes(obj.frequency) ? obj.frequency : 'Alta',
+    typicalPattern: {
+      formatPreference: String(tp.formatPreference || 'Casos Práticos Hipotéticos'),
+      targetArticles: Array.isArray(tp.targetArticles) && tp.targetArticles.length ? tp.targetArticles.map(String) : ['Dispositivos centrais de ' + theme],
+      styleSummary: String(tp.styleSummary || 'A FCC cobra o tema com enunciados enxutos e distratores que alteram um único termo da redação oficial.')
+    },
+    trapMapping: (Array.isArray(obj.trapMapping) ? obj.trapMapping : []).map(t => ({
+      trapName: String(t && t.trapName || 'Pegadinha recorrente'),
+      description: String(t && t.description || ''),
+      example: String(t && t.example || '')
+    })).filter(t => t.description),
+    seniorTip: String(obj.seniorTip || 'Leia as cinco alternativas até o ponto final e compare cada verbo-chave com o dispositivo de regência.')
+  };
+}
+
+/* =====================================================================
+   GERAÇÃO DE QUESTÕES (ETAPAS 1–3)
+   ===================================================================== */
+async function handleGenerate(e) {
+  if (e) e.preventDefault();
+  const theme = (document.getElementById('themeInput') || {}).value || '';
+  const discipline = (document.getElementById('disciplineInput') || {}).value || 'Geral';
+  const exam = (document.getElementById('examInput') || {}).value || 'FCC Nível Médio';
+  const count = state.genCount || 3;
+
+  if (!theme.trim()) { state.error = 'Informe o tema desejado para o especialista analisar e gerar as questões.'; render(); return; }
+
+  state.loading = true;
+  state.error = null;
+  state.loadingStep = 1;
+  render();
+
+  const stepTimer = setInterval(() => {
+    state.loadingStep = Math.min(3, state.loadingStep + 1);
+    const st = document.getElementById('loadSteps');
+    if (st) renderLoadSteps(st);
+  }, 1200);
+
+  try {
+    const res = await callGemini(buildGenPrompt(theme.trim(), discipline, exam, count));
+    const obj = parseJson(res.text);
+    if (!obj || !obj.questions || !obj.questions.length) throw new Error('A IA não devolveu questões válidas.');
+
+    const questions = obj.questions
+      .map((q, i) => normalizeQuestion(q, i, discipline, theme.trim()))
+      .filter(Boolean)
+      .slice(0, count);
+
+    if (!questions.length) throw new Error('Nenhuma questão com fundamentação completa foi gerada.');
+
+    state.gen = {
+      theme: theme.trim(),
+      discipline,
+      exam,
+      model: res.model,
+      rayX: normalizeRayX(obj.rayX, theme.trim()),
+      questions,
+      answers: {},
+      explanations: {},
+      eliminated: {}
+    };
+  } catch (err) {
+    state.error = String(err.message || err);
+  } finally {
+    clearInterval(stepTimer);
+    state.loading = false;
+    render();
+  }
+}
+
+function renderLoadSteps(el) {
+  const steps = [
+    'ETAPA 1 — Raio-X: incidência recente & pegadinhas',
+    'ETAPA 2 — Questões inéditas com distratores verossímeis',
+    'ETAPA 3 — Gabarito comentado & engenharia de distratores'
+  ];
+  el.innerHTML = steps.map((s, i) => `
+    <div class="panel" style="padding:11px 13px;display:flex;gap:11px;align-items:center;font-size:11.5px;font-weight:${state.loadingStep >= i + 1 ? '800' : '600'};color:${state.loadingStep >= i + 1 ? '#1e3a8a' : '#94a3b8'};background:${state.loadingStep >= i + 1 ? '#eff6ff' : '#f8fafc'};border-color:${state.loadingStep >= i + 1 ? '#bfdbfe' : '#e2e8f0'}">
+      <div style="width:21px;height:21px;border-radius:99px;background:${state.loadingStep >= i + 1 ? '#2563eb' : '#e2e8f0'};color:#fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:900;flex-shrink:0">${i + 1}</div>
+      <span>${s}</span>
+    </div>`).join('');
+}
+
+function answerGen(qIndex, letter) {
+  const g = state.gen;
+  if (!g || g.answers[qIndex]) return;
+  g.answers[qIndex] = letter;
+  g.explanations[qIndex] = true;
+  const q = g.questions[qIndex];
+  if (letter === q.correctOption) confettiBurst();
+  render();
+}
+function toggleGenExpl(qIndex) {
+  const g = state.gen;
+  g.explanations[qIndex] = !g.explanations[qIndex];
+  render();
+}
+function toggleGenElim(qIndex, letter) {
+  const g = state.gen;
+  const k = qIndex + '-' + letter;
+  g.eliminated[k] = !g.eliminated[k];
+  render();
+}
+
+function confettiBurst() {
+  try {
+    const colors = ['#059669', '#2563eb', '#e9c659', '#4338ca'];
+    for (let i = 0; i < 26; i++) {
+      const d = document.createElement('div');
+      const size = 6 + Math.random() * 7;
+      d.style.cssText = 'position:fixed;z-index:99;width:' + size + 'px;height:' + size + 'px;background:' + colors[i % colors.length] + ';border-radius:2px;pointer-events:none;left:' + (45 + Math.random() * 10) + 'vw;top:45vh;opacity:1;transform:rotate(' + Math.random() * 360 + 'deg)';
+      document.body.appendChild(d);
+      const angle = Math.random() * Math.PI * 2, dist = 90 + Math.random() * 220;
+      d.animate([{ transform: 'translate(0,0) rotate(0deg)', opacity: 1 },
+                 { transform: 'translate(' + Math.cos(angle) * dist + 'px,' + (Math.sin(angle) * dist + 220) + 'px) rotate(' + (Math.random() * 600) + 'deg)', opacity: 0 }],
+                 { duration: 1000 + Math.random() * 500, easing: 'cubic-bezier(.2,.6,.3,1)' }).onfinish = () => d.remove();
+    }
+  } catch (e) {}
+}
+
+/* =====================================================================
+   GERADOR — RENDER
+   ===================================================================== */
+function renderGenerator() {
+  const g = state.gen;
+  const counts = [1, 3, 5, 10];
+  const cur = state.genCount || 3;
+
+  let html = `
+  <div class="section-gap">
+    <section class="hero">
+      <div class="pill">⚖️ Fundação Carlos Chagas • Nível Médio</div>
+      <h1>Qual tema você quer dominar <span class="gold">hoje</span>?</h1>
+      <p class="fcc-text">Informe o <strong style="color:#e2e8f0">Tema</strong> desejado (e, se houver, a <strong style="color:#e2e8f0">Disciplina</strong> e o <strong style="color:#e2e8f0">Concurso/Órgão alvo</strong>). Você receberá o Raio-X de incidência, questões inéditas e o gabarito comentado com o motivo de cada erro.</p>
+      <div class="cmd-box">
+        <span class="lbl">Comando inicial ao especialista</span>
+        Exemplo: <code>Atos Administrativos — Técnico do TRT</code> ou <code>Crase — FCC Nível Médio</code>
+      </div>
+    </section>
+
+    <section class="card" style="padding:18px">
+      <form onsubmit="return handleGenerate(event)">
+        <div style="margin-bottom:14px">
+          <label class="field-label">Tema do estudo <span style="color:#e11d48">*</span></label>
+          <input type="text" id="themeInput" value="${esc(g ? g.theme : '')}" placeholder="Ex.: Licitação — Inexigibilidade vs Dispensa (Lei 14.133/21)" autofocus>
+        </div>
+        <div class="grid-2" style="margin-bottom:14px">
+          <div>
+            <label class="field-label">Disciplina (opcional)</label>
+            <select id="disciplineInput">
+              ${['Geral', 'Língua Portuguesa', 'Direito Constitucional', 'Direito Administrativo', 'Raciocínio Lógico-Matemático', 'Regimentos Internos e Legislação Específica']
+                .map(d => `<option ${g && g.discipline === d ? 'selected' : ''}>${d}</option>`).join('')}
+            </select>
+          </div>
+          <div>
+            <label class="field-label">Concurso / Órgão alvo (opcional)</label>
+            <select id="examInput">
+              ${['FCC Nível Médio (Técnico Judiciário)', 'TRT — Técnico Judiciário', 'TRE — Técnico Judiciário', 'TRF — Técnico Judiciário', 'TJ — Técnico Judiciário', 'Cargos Administrativos']
+                .map(d => `<option ${g && g.exam === d ? 'selected' : ''}>${d}</option>`).join('')}
+            </select>
+          </div>
+        </div>
+        <div class="row-actions">
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;flex:1">
+            <span class="field-label" style="margin:0">Questões:</span>
+            <div class="q-btn-group">
+              ${counts.map(n => `<button type="button" class="${cur === n ? 'active' : ''}" onclick="setGenCount(${n})">${n}${n === 3 ? ' *' : ''}</button>`).join('')}
+            </div>
+            <span class="small-note">* padrão</span>
+          </div>
+          <button class="btn btn-primary" type="submit" ${state.loading ? 'disabled style="opacity:.6"' : ''}>
+            ${state.loading ? '<span class="spinner"></span> Analisando padrão FCC...' : '✨ Gerar Raio-X + Questões Inéditas'}
+          </button>
+        </div>
+      </form>
+      ${state.error ? `<div class="alert alert-error" style="margin-top:14px"><span>⚠️</span><div><strong>Aviso do Especialista</strong><br>${esc(state.error)}</div></div>` : ''}
+    </section>
+
+    ${state.loading ? `
+    <section class="card fade-in" style="padding:26px 18px;text-align:center">
+      <div style="width:56px;height:56px;border-radius:18px;background:#eff6ff;color:#2563eb;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:26px">🧠</div>
+      <h3 style="margin:12px 0 4px;font-size:17px;font-weight:900">Redigindo questões no padrão FCC</h3>
+      <p class="small-note">Calibrando vocabulário formal e fundamentos literais do seu tema...</p>
+      <div style="max-width:420px;margin:16px auto 0"><div class="progress-track"><div class="progress-fill"></div></div></div>
+      <div id="loadSteps" style="max-width:420px;margin:16px auto 0;display:flex;flex-direction:column;gap:8px"></div>
+    </section>` : ''}
+  `;
+
+  if (g && !state.loading) html += renderGeneratedResult(g);
+  html += '</div>';
+  return html;
+}
+
+function setGenCount(n) {
+  state.genCount = n;
+  render();
+}
+
+function renderGeneratedResult(g) {
+  const ray = g.rayX;
+  const freqClass = ray.frequency === 'Alta' ? 'badge-red' : ray.frequency === 'Média' ? 'badge-amber' : 'badge-blue';
+
+  let html = '<div class="section-gap fade-in">';
+
+  /* ---------- ETAPA 1 ---------- */
+  html += `
+  <section class="card" style="overflow:hidden">
+    <div class="stage-head stage-1">
+      <div style="display:flex;gap:11px;align-items:center">
+        <div class="stage-num">1</div>
+        <div><div class="stage-kicker">Etapa 1</div><div class="stage-title">Raio-X FCC • Incidência (3–5 anos)</div></div>
+      </div>
+      <div class="badge ${freqClass}">Incidência: ${esc(ray.frequency)}</div>
+    </div>
+    <div style="padding:18px">
+      <div class="grid-2">
+        <div class="panel">
+          <h4>⚖️ Padrão típico de cobrança</h4>
+          <p style="font-size:12px;color:#334155;margin:0 0 8px"><strong>Formato preferido:</strong> <span style="color:#1d4ed8;font-weight:800">${esc(ray.typicalPattern.formatPreference)}</span></p>
+          <p class="fcc-text" style="font-size:12.5px;color:#475569;margin:0">${esc(ray.typicalPattern.styleSummary)}</p>
+        </div>
+        <div class="panel">
+          <h4>📖 Artigos & regras mais visados</h4>
+          <ul>${ray.typicalPattern.targetArticles.map(a => `<li>${esc(a)}</li>`).join('')}</ul>
+        </div>
+      </div>
+
+      <div style="margin-top:16px">
+        <h4 style="font-size:13px;font-weight:900;margin:0 0 10px;display:flex;gap:7px;align-items:center"><span>⚠️</span> Pegadinhas comuns da banca neste tema</h4>
+        <div class="grid-3">
+          ${ray.trapMapping.map(t => `
+            <div class="trap-card">
+              <div class="t"><span style="width:8px;height:8px;border-radius:99px;background:#f59e0b;flex-shrink:0;margin-top:5px"></span><span>${esc(t.trapName)}</span></div>
+              <div class="d">${esc(t.description)}</div>
+              ${t.example ? `<div class="ex">Ex.: “${esc(t.example)}”</div>` : ''}
+            </div>`).join('')}
+        </div>
+      </div>
+
+      ${ray.seniorTip ? `
+      <div class="tip-card" style="margin-top:16px">
+        <strong>💡 Dica de ouro do especialista FCC</strong>
+        <span class="fcc-text">${esc(ray.seniorTip)}</span>
+      </div>` : ''}
+    </div>
+  </section>`;
+
+  /* ---------- ETAPA 2 + 3 ---------- */
+  html += `
+  <section>
+    <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;border-bottom:2px solid #e2e8f0;padding-bottom:11px">
+      <div style="display:flex;gap:11px;align-items:center">
+        <div style="width:32px;height:32px;border-radius:11px;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px">2</div>
+        <div><div class="stage-kicker" style="color:#2563eb">Etapa 2</div><div class="stage-title" style="color:#0f172a">Questões inéditas (${g.questions.length})</div></div>
+      </div>
+      <span class="badge badge-grey">5 alternativas • vocabulário oficial FCC</span>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px">
+      <button class="btn btn-ghost btn-sm" onclick="copyGenReport()">📋 Copiar relatório</button>
+      <button class="btn btn-primary btn-sm" onclick="saveGenAsSession()">💾 Salvar como caderno e responder</button>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:18px;margin-top:16px">
+      ${g.questions.map((q, i) => renderQuestionCard(q, i, 'gen')).join('')}
+    </div>
+  </section>`;
+
+  html += '</div>';
+  return html;
+}
+
+function renderQuestionCard(q, i, mode) {
+  const isGen = mode === 'gen';
+  const g = state.gen;
+  const sim = state.sim;
+
+  let selected = null, expl = false, eliminated = {};
+  if (isGen) {
+    selected = g.answers[i];
+    expl = !!g.explanations[i];
+    eliminated = g.eliminated;
+  } else {
+    const s = getSession(sim.sessionId);
+    const ans = (s.answers || []).find(a => a.qid === q.id);
+    selected = ans ? ans.letter : null;
+    expl = !!selected || sim.finished;
+  }
+
+  const answered = !!selected;
+  const f = q.foundation || {};
+
+  const optHtml = LETTERS.map(l => {
+    const isCorrect = l === q.correctOption;
+    const isSel = selected === l;
+    const isElim = eliminated[i + '-' + l];
+
+    let cls = '';
+    if (answered) {
+      if (isCorrect) cls = 'correct';
+      else if (isSel) cls = 'wrong';
+      else cls = 'dim';
+    }
+    if (isElim && !answered) cls = 'eliminated';
+
+    return `
+      <div class="opt ${cls}" onclick="${isGen ? `answerGen(${i},'${l}')` : `answerSim(${i},'${l}')`}">
+        <div class="letter">${l}</div>
+        <div class="txt fcc-text">${esc(q.options[l])}</div>
+        ${!answered && isGen ? `<button class="strike-btn" onclick="event.stopPropagation();toggleGenElim(${i},'${l}')" title="Riscar alternativa">✂️</button>` : ''}
+        ${answered && isCorrect ? '<span style="color:#059669;font-size:18px">✓</span>' : ''}
+        ${answered && isSel && !isCorrect ? '<span style="color:#e11d48;font-size:18px">✕</span>' : ''}
+      </div>`;
+  }).join('');
+
+  const fbLine = !answered
+    ? '<div class="feedback-line">Toque na alternativa para responder e ver os motivos dos erros.</div>'
+    : selected === q.correctOption
+      ? '<div class="feedback-line ok">✓ Correto! Veja a fundamentação e análise abaixo.</div>'
+      : `<div class="feedback-line no">✕ Você marcou (${selected}) — o gabarito oficial é (${q.correctOption}). Veja os motivos dos erros:</div>`;
+
+  const explanationHtml = answered && expl ? `
+    <div class="fade-in" style="margin-top:16px;padding-top:16px;border-top:2px solid #e2e8f0">
+      <div style="display:flex;flex-wrap:wrap;gap:9px;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="display:flex;gap:8px;align-items:center">
+          <div style="width:25px;height:25px;border-radius:8px;background:#059669;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900">3</div>
+          <span style="font-size:10.5px;font-weight:900;text-transform:uppercase;letter-spacing:.1em;color:#0f172a">Etapa 3 • Gabarito & engenharia de distratores</span>
+        </div>
+        <span class="badge badge-green">Gabarito oficial: letra (${q.correctOption})</span>
+      </div>
+
+      ${f.transcricao ? `
+      <div class="found-box">
+        ${f.dispositivo ? `<div class="found-dev">📕 ${esc(f.dispositivo)}</div>` : ''}
+        ${f.fonte && f.fonte !== f.dispositivo ? `<div class="badge badge-grey" style="margin-bottom:8px">${esc(f.fonte)}</div>` : ''}
+        <div class="k">Texto de referência</div>
+        <div class="v">${esc(f.transcricao)}</div>
+        ${f.explicacao ? `<div style="margin-top:11px"><div class="k">Aplicação ao caso</div><div style="font-size:12.5px;color:#334155;line-height:1.75;text-align:justify;margin-top:5px">${esc(f.explicacao)}</div></div>` : ''}
+      </div>` : `<div class="alert alert-warn"><span>ℹ️</span><div>Este caderno não trazia comentário oficial. Consulte o gabarito comentado do concurso para a fundamentação completa.</div></div>`}
+
+      ${f.dicaMemorizacao ? `<div class="mem-card" style="margin-top:10px"><strong>💡 Para memorizar:</strong> ${esc(f.dicaMemorizacao)}</div>` : ''}
+
+      <div style="margin-top:14px">
+        <div style="font-size:11px;font-weight:900;color:#0f172a;margin-bottom:8px">Motivo do acerto e análise dos erros em cada alternativa:</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          ${LETTERS.map(l => {
+            const isCorrect = l === q.correctOption;
+            const note = (q.distractorAnalysis && q.distractorAnalysis[l]) || (isCorrect ? 'CORRETA conforme o gabarito oficial.' : 'INCORRETA segundo o gabarito oficial.');
+            return `<div class="dist-item ${isCorrect ? 'ok' : ''}"><span class="lb">(${l})</span><strong>${isCorrect ? 'CORRETA.' : 'INCORRETA.'}</strong> ${esc(note)}</div>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>` : '';
+
+  return `
+  <article class="card q-card">
+    <div class="q-head">
+      <div style="display:flex;gap:9px;align-items:center;min-width:0">
+        <span class="q-num">QUESTÃO ${i + 1}</span>
+        <span class="q-disc">${esc(q.discipline)}</span>
+      </div>
+      ${q.fccTrapType ? `<span class="badge badge-amber" style="color:#78350f;background:#fef3c7;border:1px solid #fde68a">Trap: ${esc(q.fccTrapType)}</span>` : ''}
+    </div>
+    <div style="padding:18px">
+      <div class="fcc-text" style="font-family:Georgia,serif;white-space:pre-line;color:#0f172a">${esc(q.statement)}</div>
+      <div class="opt-stack" style="margin-top:14px">${optHtml}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-top:14px;padding-top:12px;border-top:1px solid #f1f5f9">
+        ${fbLine}
+        ${answered ? `<button class="btn btn-ghost btn-sm" onclick="${isGen ? `toggleGenExpl(${i})` : `toggleSimExpl(${i})`}">${expl ? '▲ Ocultar gabarito comentado' : '▼ Ver gabarito comentado (Etapa 3)'}</button>` : ''}
+      </div>
+      ${explanationHtml}
+    </div>
+  </article>`;
+}
+
+/* =====================================================================
+   SESSÕES / SALVAR / SIMULADO
+   ===================================================================== */
+function getSession(id) { return state.sessions.find(s => s.id === id); }
+
+function copyGenReport() {
+  const g = state.gen;
+  if (!g) return;
+  const ray = g.rayX;
+  let t = '========================================================\n';
+  t += 'ESPECIALISTA FCC - RELATORIO OFICIAL DE QUESTOES INEDITAS\n';
+  t += 'TEMA: ' + g.theme + '\n';
+  t += 'DISCIPLINA: ' + g.discipline + ' | ORGAO ALVO: ' + g.exam + '\n';
+  t += '========================================================\n\n';
+  t += '--- ETAPA 1: RAIO-X FCC ---\n';
+  t += 'Incidencia: ' + ray.frequency + '\n';
+  t += 'Formato: ' + ray.typicalPattern.formatPreference + '\n';
+  t += 'Padrao: ' + ray.typicalPattern.styleSummary + '\n';
+  t += 'Artigos/Regras:\n' + ray.typicalPattern.targetArticles.map(a => '- ' + a).join('\n') + '\n\n';
+  t += 'Pegadinhas:\n' + ray.trapMapping.map(x => '- ' + x.trapName + ': ' + x.description + (x.example ? ' (Ex: "' + x.example + '")' : '')).join('\n') + '\n\n';
+  t += 'Dica de ouro: ' + ray.seniorTip + '\n\n';
+  t += '--- ETAPA 2: QUESTOES INEDITAS ---\n\n';
+  g.questions.forEach((q, i) => {
+    t += 'QUESTAO ' + (i + 1) + ' (' + q.discipline + ')\n' + q.statement + '\n\n';
+    LETTERS.forEach(l => { t += '(' + l + ') ' + q.options[l] + '\n'; });
+    t += '\n--- ETAPA 3: GABARITO COMENTADO ---\n';
+    t += 'Gabarito oficial: Letra (' + q.correctOption + ')\n';
+    t += 'Fundamento:\n' + (q.directFoundation || '') + '\n\n';
+    t += 'Engenharia de distratores:\n';
+    LETTERS.forEach(l => { t += '(' + l + ') ' + (q.distractorAnalysis[l] || '') + '\n'; });
+    t += '--------------------------------------------------------\n\n';
+  });
+
+  const done = () => toast('Relatorio copiado para a area de transferencia 📋');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(t).then(done).catch(() => fallbackCopy(t, done));
+  } else {
+    fallbackCopy(t, done);
+  }
+}
+function fallbackCopy(text, cb) {
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;top:-1000px;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+    if (cb) cb();
+  } catch (e) { toast('Nao foi possivel copiar automaticamente.'); }
+}
+
+function saveGenAsSession() {
+  const g = state.gen;
+  if (!g) return;
+  const session = {
+    id: uid(),
+    title: g.theme,
+    discipline: g.discipline,
+    targetExam: g.exam,
+    source: 'ia',
+    model: g.model,
+    createdAt: new Date().toISOString(),
+    questions: g.questions.map(q => ({ ...q })),
+    answers: []
+  };
+  state.sessions.unshift(session);
+  saveSessions();
+  startSimulado(session.id);
+  toast('Caderno salvo! Bom estudo 🎯');
+}
+
+function startSimulado(sessionId) {
+  const s = getSession(sessionId);
+  if (!s) return;
+  // Recupera progresso salvo
+  const saved = LS.get('fcc_sim_' + sessionId, null);
+  state.sim = {
+    sessionId,
+    currentIdx: saved ? (saved.currentIdx || 0) : 0,
+    elapsed: saved ? (saved.elapsed || 0) : 0,
+    paused: false,
+    finished: sessionStats(s).done,
+    flagged: saved ? (saved.flagged || {}) : {}
+  };
+  state.tab = 'simulado';
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  startTimer();
+}
+
+function persistSim() {
+  if (!state.sim) return;
+  LS.set('fcc_sim_' + state.sim.sessionId, {
+    currentIdx: state.sim.currentIdx,
+    elapsed: state.sim.elapsed,
+    flagged: state.sim.flagged
+  });
+}
+
+let timerHandle = null;
+function startTimer() {
+  stopTimer();
+  timerHandle = setInterval(() => {
+    if (!state.sim || state.sim.paused || state.sim.finished) return;
+    state.sim.elapsed += 1;
+    const el = document.getElementById('timerVal');
+    if (el) el.textContent = fmtTime(state.sim.elapsed);
+    persistSim();
+  }, 1000);
+}
+function stopTimer() { if (timerHandle) clearInterval(timerHandle); timerHandle = null; }
+
+function answerSim(i, letter) {
+  const sim = state.sim;
+  if (!sim || sim.finished || sim.paused) return;
+  const s = getSession(sim.sessionId);
+  const q = s.questions[i];
+  if ((s.answers || []).some(a => a.qid === q.id)) return;
+
+  s.answers = s.answers || [];
+  s.answers.push({ qid: q.id, letter, isCorrect: letter === q.correctOption, at: new Date().toISOString() });
+  saveSessions();
+  persistSim();
+  if (letter === q.correctOption) confettiBurst();
+
+  const st = sessionStats(s);
+  if (st.done) { sim.finished = true; stopTimer(); LS.del('fcc_sim_' + sim.sessionId); }
+  render();
+}
+function toggleSimExpl(i) {
+  // Ao já ter respondido, a explicação aparece sempre; mantido por consistência
+  render();
+}
+function pauseSim() { if (state.sim) { state.sim.paused = true; persistSim(); render(); } }
+function resumeSim() { if (state.sim) { state.sim.paused = false; render(); } }
+function saveExitSim() {
+  persistSim();
+  stopTimer();
+  const id = state.sim.sessionId;
+  state.sim = null;
+  state.tab = 'history';
+  render();
+  toast('Progresso salvo. Você pode continuar depois pelo Histórico 💾');
+}
+function finishSim() {
+  const sim = state.sim;
+  if (!sim) return;
+  sim.finished = true;
+  stopTimer();
+  LS.del('fcc_sim_' + sim.sessionId);
+  render();
+}
+function gotoSimIdx(i) {
+  if (!state.sim) return;
+  state.sim.currentIdx = i;
+  state.sim.paused = false;
+  persistSim();
+  render();
+}
+function toggleFlagSim(i) {
+  if (!state.sim) return;
+  state.sim.flagged[i] = !state.sim.flagged[i];
+  persistSim();
+  render();
+}
+function restartBattery(sessionId, alsoStart) {
+  const s = getSession(sessionId);
+  if (!s) return;
+  s.answers = [];
+  saveSessions();
+  LS.del('fcc_sim_' + sessionId);
+  if (alsoStart !== false) { startSimulado(sessionId); toast('Bateria reiniciada! Responda novamente as questões 🔄'); }
+  else { render(); toast('Bateria reiniciada. Respostas anteriores zeradas 🔄'); }
+}
+
+function renderSimulado() {
+  const sim = state.sim;
+  if (!sim) {
+    return `<div class="empty-state fade-in" style="max-width:430px;margin:40px auto">
+      <div style="width:52px;height:52px;border-radius:18px;background:#eef2ff;color:#4338ca;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:24px">📄</div>
+      <h3 style="font-size:17px;font-weight:900;margin:12px 0 6px">Nenhum simulado ativo</h3>
+      <p class="small-note">Importe um caderno em PDF ou selecione um caderno no Histórico para responder.</p>
+      <div style="display:flex;gap:9px;justify-content:center;margin-top:16px">
+        <button class="btn btn-primary btn-sm" onclick="go('pdf')">Importar PDF</button>
+        <button class="btn btn-ghost btn-sm" onclick="go('history')">Ver Histórico</button>
+      </div>
+    </div>`;
+  }
+
+  const s = getSession(sim.sessionId);
+  if (!s) { state.sim = null; return renderSimulado(); }
+  const st = sessionStats(s);
+  const q = s.questions[sim.currentIdx];
+  const selected = (s.answers || []).find(a => a.qid === q.id);
+  const answeredCount = st.answered;
+
+  let html = '<div class="section-gap fade-in">';
+
+  /* Barra superior */
+  html += `
+  <div class="sim-bar">
+    <div class="sim-bar-title" style="display:flex;gap:11px;align-items:center;min-width:0">
+      <div style="width:42px;height:42px;border-radius:14px;background:rgba(99,102,241,.2);color:#a5b4fc;display:flex;align-items:center;justify-content:center;flex-shrink:0">📄</div>
+      <div style="min-width:0;flex:1">
+        <div style="font-size:9.5px;font-weight:900;text-transform:uppercase;letter-spacing:.13em;color:#a5b4fc">Simulado interativo • Caderno</div>
+        <div id="simTitleWrap" style="display:flex;gap:8px;align-items:center;margin-top:2px;min-width:0">
+          <h2 style="margin:0;font-size:15px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0;flex:1">${esc(s.title)}</h2>
+          <button class="icon-btn" style="width:27px;height:27px;font-size:12px;flex-shrink:0" onclick="promptRename(${s.id})" title="Renomear caderno">✏️</button>
+        </div>
+      </div>
+    </div>
+    <div class="sim-bar-controls" style="display:flex;gap:9px;align-items:center;flex-wrap:wrap">
+      <div class="timer-box">
+        <span style="color:${sim.paused ? '#fbbf24' : '#fcd34d'}">⏱️</span>
+        <span class="timer-val" id="timerVal">${fmtTime(sim.elapsed)}</span>
+        ${!sim.finished ? `<button class="timer-btn" onclick="${sim.paused ? 'resumeSim()' : 'pauseSim()'}" title="${sim.paused ? 'Continuar' : 'Pausar'}">${sim.paused ? '▶' : '⏸'}</button>` : ''}
+      </div>
+      <span class="small-note sim-count" style="color:#94a3b8">${answeredCount}/${s.questions.length}</span>
+      ${!sim.finished
+        ? `<button class="btn btn-success btn-sm" onclick="finishSim()">Finalizar prova</button>`
+        : `<button class="btn btn-primary btn-sm" onclick="saveExitSim()">Concluir e voltar</button>`}
+    </div>
+  </div>`;
+
+  /* Folha de respostas */
+  html += `
+  <div class="card" style="padding:14px;display:flex;flex-wrap:wrap;gap:11px;align-items:center;justify-content:space-between">
+    <div style="display:flex;gap:8px;align-items:baseline">
+      <span style="font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.09em;color:#64748b">Folha de respostas:</span>
+      <span class="small-note">(${answeredCount} de ${s.questions.length} respondidas)</span>
+    </div>
+    <div class="bubbles">
+      ${s.questions.map((qq, idx) => {
+        const a = (s.answers || []).find(x => x.qid === qq.id);
+        let cls = '';
+        if (sim.finished) cls = a ? (a.isCorrect ? 'ok' : 'no') : '';
+        else if (sim.currentIdx === idx) cls = 'current';
+        else if (a) cls = 'answered';
+        return `<button class="bubble ${cls}" onclick="gotoSimIdx(${idx})">${idx + 1}${sim.flagged[idx] ? '<span class="flag"></span>' : ''}</button>`;
+      }).join('')}
+    </div>
+  </div>`;
+
+  /* Painel de pausa */
+  if (sim.paused && !sim.finished) {
+    html += `
+    <div class="pause-panel fade-in">
+      <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between">
+        <div style="display:flex;gap:12px;align-items:center">
+          <div style="width:48px;height:48px;border-radius:16px;background:rgba(245,158,11,.2);color:#fbbf24;display:flex;align-items:center;justify-content:center;font-size:22px">⏸️</div>
+          <div>
+            <div class="lbl">Progresso preservado</div>
+            <h3>Simulado pausado</h3>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div class="small-note" style="color:#94a3b8">Tempo pausado em</div>
+          <div style="font-family:ui-monospace,monospace;font-size:25px;font-weight:900;color:#fcd34d">${fmtTime(sim.elapsed)}</div>
+        </div>
+      </div>
+      <p class="fcc-text">Seu tempo foi pausado e todo o seu progresso (<strong style="color:#fff">${answeredCount}</strong> de <strong style="color:#fff">${s.questions.length}</strong> questões respondidas) está salvo automaticamente neste navegador. Continue agora ou saia e retome mais tarde pelo Histórico.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;padding-top:6px">
+        <button class="btn btn-success" onclick="resumeSim()">▶ Continuar simulado</button>
+        <button class="btn btn-ghost" onclick="saveExitSim()">💾 Salvar e sair (continuar depois)</button>
+      </div>
+    </div>`;
+  }
+
+  /* Resumo final */
+  if (sim.finished) {
+    const pct = st.total ? Math.round(st.correct / st.total * 100) : 0;
+    html += `
+    <div class="summary-card fade-in">
+      <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between">
+        <div style="display:flex;gap:13px;align-items:center">
+          <div style="width:50px;height:50px;border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:23px;background:${pct >= 70 ? '#059669' : '#d97706'}">🏆</div>
+          <div>
+            <div class="stage-kicker" style="color:#93c5fd">Resultado do simulado</div>
+            <h3 style="margin:2px 0 0;font-size:18px;font-weight:900">${pct >= 70 ? 'Excelente aproveitamento!' : 'Bom treino! Revise os motivos dos erros.'}</h3>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div class="pct">${pct}%</div>
+          <div class="small-note" style="color:#cbd5e1">${st.correct} de ${st.total} questões acertadas</div>
+        </div>
+      </div>
+      <div class="grid-3" style="margin-top:14px">
+        <div class="kpi"><span class="k">Tempo total</span><span class="v">${fmtTime(sim.elapsed)}</span></div>
+        <div class="kpi"><span class="k">Média por questão</span><span class="v">${st.total ? Math.round(sim.elapsed / st.total) : 0}s</span></div>
+        <div class="kpi"><span class="k">Registro</span><span class="v" style="color:#34d399;font-size:13px">Salvo no seu desempenho</span></div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:9px;padding-top:14px">
+        <button class="btn btn-success" onclick="restartBattery(${s.id})">🔄 Reiniciar bateria (responder novamente)</button>
+        <button class="btn btn-ghost" onclick="saveExitSim()">✕ Concluir e voltar</button>
+      </div>
+    </div>`;
+  }
+
+  /* Questão */
+  html += renderQuestionCard(q, sim.currentIdx, 'sim');
+  html += '</div>';
+  return html;
+}
+
+function promptRename(sessionId) {
+  const s = getSession(sessionId);
+  if (!s) return;
+  const novo = prompt('Renomear caderno:', s.title);
+  if (novo && novo.trim()) {
+    s.title = novo.trim();
+    saveSessions();
+    render();
+    toast('Caderno renomeado com sucesso ✏️');
+  }
+}
+
+/* =====================================================================
+   IMPORTAÇÃO DE PDF
+   ===================================================================== */
+function renderPdf() {
+  return `
+  <div class="section-gap fade-in">
+    <section class="hero">
+      <div class="pill">📄 Importação direta de caderno</div>
+      <h1>Envie seu caderno em PDF para gerar o <span class="gold">simulado interativo</span></h1>
+      <p class="fcc-text">A IA lê o PDF, identifica as questões, o gabarito oficial e os motivos dos erros de cada alternativa — e inicia o simulado imediatamente, com desempenho refletido em Erros, Desempenho e Histórico.</p>
+    </section>
+
+    <section class="card" style="padding:18px">
+      ${state.importing ? `
+        <div style="text-align:center;padding:30px 14px">
+          <div style="width:60px;height:60px;border-radius:20px;background:#eef2ff;color:#4338ca;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:28px"><span class="spinner spinner-dark"></span></div>
+          <h3 style="margin:14px 0 5px;font-size:17px;font-weight:900">${esc(state.importMsg || 'Lendo seu caderno...')}</h3>
+          <p class="small-note">A IA pode levar de 30 a 90 segundos dependendo do tamanho do caderno. O simulado iniciará automaticamente.</p>
+          <div style="max-width:400px;margin:16px auto 0"><div class="progress-track"><div class="progress-fill"></div></div></div>
+        </div>`
+      : `
+        <div class="drop-zone" id="dropZone" onclick="document.getElementById('pdfInput').click()">
+          <div class="drop-icon">📤</div>
+          <h3 style="margin:14px 0 5px;font-size:17px;font-weight:900;color:#0f172a">Arraste seu PDF aqui ou toque para selecionar</h3>
+          <p class="small-note">Cadernos de provas em PDF (digital ou escaneado) • até 20 MB</p>
+          <div class="btn btn-primary" style="margin-top:16px">📄 Selecionar arquivo PDF</div>
+          <input type="file" id="pdfInput" accept="application/pdf,.pdf" style="display:none" onchange="handlePdfFile(this.files[0])">
+        </div>
+
+        <div class="grid-3" style="margin-top:14px">
+          <div class="panel"><h4>🔎 1. Leitura automática</h4><p class="small-note">A IA extrai enunciados, opções e identifica o gabarito do PDF.</p></div>
+          <div class="panel"><h4>🧠 2. Motivos dos erros</h4><p class="small-note">Mapeia onde está o erro de cada distrator para mostrar ao responder.</p></div>
+          <div class="panel"><h4>✨ 3. Início imediato</h4><p class="small-note">Abre direto o simulado interativo, com reflexo em todas as métricas.</p></div>
+        </div>
+
+        ${state.error ? `<div class="alert alert-error" style="margin-top:14px"><span>⚠️</span><div>${esc(state.error)}</div></div>` : ''}
+      `}
+    </section>
+
+    <section class="card" style="padding:18px">
+      <h4 style="margin:0 0 10px;font-size:13px;font-weight:900;display:flex;gap:8px;align-items:center"><span>📝</span> Alternativa: colar o texto do seu caderno</h4>
+      <p class="small-note" style="margin:0 0 10px">Se preferir (ou se o PDF for muito grande), copie e cole abaixo o conteúdo das questões (enunciados + alternativas + gabarito, se houver).</p>
+      <textarea id="pastedText" rows="7" style="width:100%;padding:12px 14px;border-radius:15px;border:1.5px solid #e2e8f0;font-size:12.5px;line-height:1.7;resize:vertical" placeholder="Cole aqui o texto do caderno..."></textarea>
+      <button class="btn btn-dark btn-sm" style="margin-top:10px" onclick="handlePastedText()">Processar texto colado</button>
+    </section>
+  </div>`;
+}
+
+async function handlePdfFile(file) {
+  if (!file) return;
+  state.error = null;
+  if (!/\.pdf$/i.test(file.name)) { state.error = 'Formato inválido. Envie apenas arquivos PDF.'; render(); return; }
+  if (file.size > 20 * 1024 * 1024) { state.error = 'Arquivo muito grande. O limite é de 20 MB.'; render(); return; }
+
+  state.importing = true;
+  state.importMsg = 'Extraindo texto do PDF...';
+  render();
+
+  try {
+    let text = '';
+    if (window.pdfjsLib) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      const buf = await file.arrayBuffer();
+      const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+      const parts = [];
+      for (let p = 1; p <= pdf.numPages; p++) {
+        state.importMsg = 'Lendo página ' + p + ' de ' + pdf.numPages + '...';
+        const page = await pdf.getPage(p);
+        const content = await page.getTextContent();
+        parts.push(content.items.map(it => it.str).join(' '));
+      }
+      text = parts.join('\n').trim();
+    }
+
+    if (text.length < 120) {
+      throw new Error('Não foi possível extrair texto deste PDF (parece ser imagem/escaneado). Use a opção de colar o texto abaixo.');
+    }
+
+    await parseTextAndStart(text, file.name.replace(/\.pdf$/i, ''));
+  } catch (err) {
+    state.importing = false;
+    state.error = String(err.message || err);
+    render();
+  }
+}
+
+async function handlePastedText() {
+  const text = ((document.getElementById('pastedText') || {}).value || '').trim();
+  if (text.length < 120) { state.error = 'Cole um texto maior (com as questões e alternativas).'; render(); return; }
+  state.importing = true;
+  state.importMsg = 'Analisando o texto com a IA...';
+  render();
+  try {
+    await parseTextAndStart(text, 'Caderno colado');
+  } catch (err) {
+    state.importing = false;
+    state.error = String(err.message || err);
+    render();
+  }
+}
+
+async function parseTextAndStart(text, titleHint) {
+  state.importMsg = 'IA identificando questões, alternativas e gabarito...';
+  render();
+
+  const CHUNK = 36000;
+  const chunks = [];
+  let cur = '';
+  text.split('\n').forEach(line => {
+    if ((cur + '\n' + line).length > CHUNK && cur) { chunks.push(cur); cur = line; }
+    else cur = cur ? cur + '\n' + line : line;
+  });
+  if (cur) chunks.push(cur);
+
+  const collected = [];
+  let title = '';
+  let start = 1;
+
+  for (let i = 0; i < chunks.length && collected.length < 60; i++) {
+    state.importMsg = 'Processando bloco ' + (i + 1) + ' de ' + chunks.length + '...';
+    render();
+    try {
+      const res = await callGemini(buildParsePrompt(chunks[i], start));
+      const obj = parseJson(res.text);
+      if (obj) {
+        if (obj.title && !title) title = String(obj.title);
+        (Array.isArray(obj.questions) ? obj.questions : []).forEach((q, j) => {
+          const nq = normalizeQuestion(q, collected.length + j, 'Caderno Importado', title);
+          if (nq && collected.length < 60) collected.push(nq);
+        });
+        start += (obj.questions || []).length;
+      }
+    } catch (e) {
+      console.warn('Falha no bloco ' + (i + 1), e);
+    }
+  }
+
+  if (!collected.length) collected.push(...fallbackParse(text));
+
+  if (!collected.length) {
+    throw new Error('Nenhuma questão objetiva com 5 alternativas foi identificada. Verifique o conteúdo do PDF.');
+  }
+
+  const session = {
+    id: uid(),
+    title: title || titleHint || 'Caderno Importado (PDF)',
+    discipline: collected[0].discipline || 'Caderno Importado',
+    targetExam: 'Caderno Importado (' + titleHint + ')',
+    source: 'pdf',
+    createdAt: new Date().toISOString(),
+    questions: collected.map((q, i) => ({ ...q, orderIndex: i + 1 })),
+    answers: []
+  };
+
+  state.sessions.unshift(session);
+  saveSessions();
+  state.importing = false;
+  state.error = null;
+  startSimulado(session.id);
+  toast('Caderno lido! Iniciando simulado 🚀');
+}
+
+function fallbackParse(text) {
+  const out = [];
+  const keyMap = {};
+  const gabIdx = text.search(/GABARITO\s*OFICIAL/i);
+  const body = gabIdx > 0 ? text.slice(0, gabIdx) : text;
+  const keySrc = gabIdx > 0 ? text.slice(gabIdx) : text;
+  const kRegex = /(\d+)\s*[-.:–—]\s*([A-Ea-e])\b/g;
+  let m;
+  while ((m = kRegex.exec(keySrc)) !== null) keyMap[parseInt(m[1], 10)] = m[2].toUpperCase();
+
+  const blocks = body.split(/(?=(?:QUEST[ÃA]O\s+\d+))/i);
+  blocks.forEach(b => {
+    if (out.length >= 60) return;
+    const first = b.search(/\([A-E]\)/i);
+    if (first <= 0) return;
+    const statement = b.slice(0, first).replace(/^QUEST[ÃA]O\s+\d+\s*[-:.]*/i, '').trim();
+    const optPart = b.slice(first);
+    const opts = {};
+    const re = /\(([A-E])\)\s*([\s\S]*?)(?=\([A-E]\)|$)/gi;
+    while ((m = re.exec(optPart)) !== null) opts[m[1].toUpperCase()] = m[2].trim();
+    if (opts.A && opts.B && opts.C && opts.D && opts.E && statement.length > 10) {
+      const n = out.length + 1;
+      const correct = keyMap[n] || 'A';
+      out.push(normalizeQuestion({
+        statement,
+        options: opts,
+        correctOption: correct,
+        discipline: 'Caderno Importado (PDF)',
+        foundation: {
+          dispositivo: 'Fundamento da banca examinadora',
+          transcricao: 'Gabarito oficial do caderno: Letra (' + correct + '). Conforme resolução e normas aplicáveis pela banca.'
+        },
+        distractorAnalysis: {}
+      }, out.length, 'Caderno Importado (PDF)', 'Caderno Importado'));
+    }
+  });
+  return out;
+}
+
+/* =====================================================================
+   CADERNO DE ERROS
+   ===================================================================== */
+function renderErros() {
+  const errs = allAnswers().filter(a => !a.isCorrect).reverse();
+
+  if (!errs.length) {
+    return `<div class="section-gap fade-in">
+      <section class="hero">
+        <div class="pill">⚠️ Caderno de erros inteligente</div>
+        <h1>Neutralize as <span class="gold">pegadinhas da FCC</span></h1>
+        <p class="fcc-text">Todas as questões em que você caiu nos distratores ficam registradas aqui, com o fundamento e o motivo exato do erro — para nunca mais errar o mesmo padrão.</p>
+      </section>
+      <div class="empty-state">
+        <div style="width:52px;height:52px;border-radius:18px;background:#d1fae5;color:#059669;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:24px">✓</div>
+        <h3 style="font-size:17px;font-weight:900;margin:12px 0 6px">Nenhum erro registrado</h3>
+        <p class="small-note">Você ainda não errou nenhuma questão. Continue praticando!</p>
+        <button class="btn btn-primary btn-sm" style="margin-top:14px" onclick="go('generator')">Gerar novas questões FCC</button>
+      </div>
+    </div>`;
+  }
+
+  return `<div class="section-gap fade-in">
+    <section class="hero">
+      <div class="pill">⚠️ Caderno de erros inteligente</div>
+      <h1>Neutralize as <span class="gold">pegadinhas da FCC</span></h1>
+      <p class="fcc-text">Total de questões para revisão: <strong style="color:#fff">${errs.length}</strong>. Analise o fundamento e o motivo exato do erro em cada alternativa.</p>
+    </section>
+
+    ${errs.map((e, i) => {
+      const q = e.question;
+      const expanded = state.expandedError[q.id] !== false;
+      const note = (q.distractorAnalysis || {})[e.letter];
+      return `
+      <article class="card q-card">
+        <div class="q-head" style="background:rgba(255,241,242,.6);border-color:#fecdd3">
+          <div style="display:flex;gap:9px;align-items:center;min-width:0;flex-wrap:wrap">
+            <span style="font-size:11px;font-weight:900;background:#e11d48;color:#fff;padding:5px 11px;border-radius:8px">ERRO #${i + 1}</span>
+            <span class="q-disc">${esc(q.discipline)}</span>
+            ${q.fccTrapType ? `<span class="badge" style="background:#fef3c7;color:#78350f;border:1px solid #fde68a">Pegadinha: ${esc(q.fccTrapType)}</span>` : ''}
+          </div>
+          <span class="small-note">Sua resposta: <strong style="color:#be123c">(${e.letter})</strong> • Gabarito: <strong style="color:#047857">(${q.correctOption})</strong></span>
+        </div>
+        <div style="padding:18px">
+          <div class="fcc-text" style="font-family:Georgia,serif;white-space:pre-line;color:#0f172a">${esc(q.statement)}</div>
+
+          <div class="alert alert-warn" style="margin-top:14px">
+            <span>💡</span>
+            <div><strong>Por que a alternativa (${e.letter}) estava incorreta:</strong><br>${esc(note || 'Alternativa verossímil da banca, descartada pelo gabarito oficial.')}</div>
+          </div>
+
+          <div style="margin-top:12px">
+            <button class="btn btn-ghost btn-sm" onclick="toggleErrExpand(${q.id})">${expanded ? '▲ Ocultar alternativas e fundamento' : '▼ Ver alternativas e fundamento'}</button>
+          </div>
+
+          ${expanded ? `
+          <div style="margin-top:14px">
+            <div class="opt-stack">
+              ${LETTERS.map(l => `
+                <div class="opt ${l === q.correctOption ? 'correct' : l === e.letter ? 'wrong' : 'dim'}">
+                  <div class="letter">${l}</div>
+                  <div class="txt fcc-text">${esc(q.options[l])}</div>
+                  ${l === q.correctOption ? '<span style="color:#059669;font-size:17px">✓</span>' : l === e.letter ? '<span style="color:#e11d48;font-size:17px">✕</span>' : ''}
+                </div>`).join('')}
+            </div>
+
+            <div class="found-box" style="margin-top:14px">
+              ${(q.foundation && q.foundation.dispositivo) ? `<div class="found-dev">📕 ${esc(q.foundation.dispositivo)}</div>` : ''}
+              <div class="k">Fundamento para memorização</div>
+              <div class="v">${esc(q.directFoundation || 'Fundamento da banca examinadora.')}</div>
+              ${(q.foundation && q.foundation.dicaMemorizacao) ? `<div class="mem-card" style="margin-top:10px"><strong>💡 Para memorizar:</strong> ${esc(q.foundation.dicaMemorizacao)}</div>` : ''}
+            </div>
+
+            <div style="margin-top:12px;display:flex;flex-direction:column;gap:8px">
+              ${LETTERS.map(l => {
+                const isC = l === q.correctOption;
+                return `<div class="dist-item ${isC ? 'ok' : ''}"><span class="lb">(${l})</span><strong>${isC ? 'CORRETA.' : 'INCORRETA.'}</strong> ${esc((q.distractorAnalysis || {})[l] || (isC ? 'Gabarito oficial do concurso.' : 'Alternativa descartada pelo gabarito oficial.'))}</div>`;
+              }).join('')}
+            </div>
+          </div>` : ''}
+        </div>
+      </article>`;
+    }).join('')}
+  </div>`;
+}
+function toggleErrExpand(qid) {
+  state.expandedError[qid] = state.expandedError[qid] === false ? true : false;
+  render();
+}
+
+/* =====================================================================
+   DESEMPENHO
+   ===================================================================== */
+function renderStats() {
+  const a = allAnswers();
+  const total = a.length;
+  const ok = a.filter(x => x.isCorrect).length;
+  const pct = total ? Math.round(ok / total * 100) : 0;
+
+  const byDisc = {};
+  a.forEach(x => {
+    const d = x.question.discipline || 'Geral';
+    byDisc[d] = byDisc[d] || { total: 0, correct: 0 };
+    byDisc[d].total++;
+    if (x.isCorrect) byDisc[d].correct++;
+  });
+
+  const pdfCount = state.sessions.filter(s => s.source === 'pdf').length;
+
+  return `<div class="section-gap fade-in">
+    <section class="hero">
+      <div class="pill">📊 Métricas & curva de rendimento</div>
+      <h1>Painel de <span class="gold">desempenho FCC</span></h1>
+      <p class="fcc-text">Acompanhe seu percentual de acertos por disciplina, o volume de questões resolvidas e as pegadinhas da banca em que você ainda tem vulnerabilidade.</p>
+    </section>
+
+    <div class="grid-2" style="gap:14px">
+      <div class="stat-tile">
+        <div class="k">Taxa geral de acertos</div>
+        <div class="v" style="color:${pct >= 75 ? '#047857' : '#b45309'}">${pct}%</div>
+        <div class="small-note">${pct >= 80 ? 'Nível competitivo para tribunais' : 'Meta recomendada: 80%+'}</div>
+      </div>
+      <div class="stat-tile">
+        <div class="k">Questões resolvidas</div>
+        <div class="v">${total}</div>
+        <div class="small-note">${ok} acertos / ${total - ok} erros</div>
+      </div>
+      <div class="stat-tile">
+        <div class="k">Cadernos salvos</div>
+        <div class="v">${state.sessions.length}</div>
+        <div class="small-note" style="color:#7c3aed;font-weight:800">${pdfCount} caderno(s) PDF importado(s)</div>
+      </div>
+      <div class="stat-tile">
+        <div class="k">Estado de prontidão</div>
+        <div class="v" style="font-size:19px">${total === 0 ? 'Sem dados' : pct >= 80 ? 'Pronto para prova' : pct >= 60 ? 'Evolução positiva' : 'Foco em revisão'}</div>
+        <div class="small-note">Calibrado com notas de corte FCC</div>
+      </div>
+    </div>
+
+    <section class="card" style="padding:20px">
+      <h4 style="margin:0 0 4px;font-size:15px;font-weight:900">Aproveitamento por disciplina</h4>
+      <p class="small-note" style="margin:0 0 16px">Rendimento calculado a partir de todas as questões resolvidas.</p>
+      ${Object.keys(byDisc).length ? Object.entries(byDisc).map(([d, v]) => {
+        const p = Math.round(v.correct / v.total * 100);
+        const color = p >= 80 ? '#059669' : p >= 50 ? '#f59e0b' : '#e11d48';
+        return `
+        <div class="bar-row">
+          <div class="top"><span>${esc(d)}</span><span>${v.correct} de ${v.total} (${p}%)</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width:${Math.max(p, 3)}%;background:${color}"></div></div>
+        </div>`;
+      }).join('') : '<div class="alert alert-info"><span>ℹ️</span><div>Resolva questões para visualizar as estatísticas por disciplina.</div></div>'}
+    </section>
+
+    <section class="card" style="padding:20px;background:linear-gradient(135deg,#1e1b4b,#0f172a);border-color:#1e293b;color:#fff">
+      <h4 style="margin:0 0 12px;font-size:15px;font-weight:900;display:flex;gap:9px;align-items:center"><span>✨</span> Diagnóstico & recomendações do especialista</h4>
+      <div class="grid-3">
+        <div class="kpi"><span class="k" style="color:#93c5fd">1. Literalidade estrita</span><div class="small-note" style="color:#cbd5e1;line-height:1.75;text-align:justify;margin-top:6px">Em nível médio, de 75% a 85% das alternativas corretas da FCC são transcrições literais do texto da CF/88 ou da lei de regência.</div></div>
+        <div class="kpi"><span class="k" style="color:#fcd34d">2. Eliminação de distratores</span><div class="small-note" style="color:#cbd5e1;line-height:1.75;text-align:justify;margin-top:6px">Risque primeiro as opções com termos absolutistas ("sempre", "em qualquer caso") e trocas como "independe" por "depende".</div></div>
+        <div class="kpi"><span class="k" style="color:#34d399">3. Ritmo de prova</span><div class="small-note" style="color:#cbd5e1;line-height:1.75;text-align:justify;margin-top:6px">Mantenha a média de 2min30s por questão para garantir tempo hábil em toda a prova.</div></div>
+      </div>
+    </section>
+  </div>`;
+}
+
+/* =====================================================================
+   HISTÓRICO
+   ===================================================================== */
+function renderHistory() {
+  const list = state.sessions;
+
+  return `<div class="section-gap fade-in">
+    <section class="hero">
+      <div class="pill">🗂️ Gerenciamento de cadernos</div>
+      <h1>Histórico de <span class="gold">cadernos</span></h1>
+      <p class="fcc-text">Renomeie, apague ou reinicie a bateria de questões de qualquer caderno — gerado por IA ou importado via PDF — e retome de onde parou.</p>
+    </section>
+
+    ${!list.length ? `
+      <div class="empty-state">
+        <div style="width:52px;height:52px;border-radius:18px;background:#eff6ff;color:#2563eb;display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:24px">📘</div>
+        <h3 style="font-size:17px;font-weight:900;margin:12px 0 6px">Nenhum caderno salvo</h3>
+        <p class="small-note">Gere questões inéditas no Gerador ou importe um caderno em PDF para começar.</p>
+        <button class="btn btn-primary btn-sm" style="margin-top:14px" onclick="go('generator')">Criar meu primeiro caderno</button>
+      </div>`
+    : `
+      <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:800;color:#64748b;padding:0 4px">
+        <span>Total: ${list.length} caderno(s)</span>
+        <span>Use as ações para gerenciar</span>
+      </div>
+
+      ${list.map(s => {
+        const st = sessionStats(s);
+        const expanded = !!state.histExpanded[s.id];
+        return `
+        <article class="card hist-card">
+          <div class="hist-main" onclick="toggleHist(${s.id})">
+            <div style="min-width:0;flex:1">
+              <div style="display:flex;flex-wrap:wrap;gap:7px;align-items:center">
+                <span class="tag ${s.source === 'pdf' ? 'tag-pdf' : 'tag-ia'}">${s.source === 'pdf' ? 'PDF IMPORTADO' : 'GERADO POR IA'}</span>
+                <span class="tag tag-ia" style="background:#f1f5f9;color:#475569;border-color:#e2e8f0">${esc(s.discipline)}</span>
+                ${st.done ? '<span class="tag tag-done">✓ FINALIZADO</span>' : st.answered > 0 ? '<span class="tag tag-progress">⏸ EM ANDAMENTO</span>' : ''}
+                <span class="small-note">🗓️ ${fmtDate(s.createdAt)}</span>
+              </div>
+              <div class="hist-title" style="margin-top:7px">${esc(s.title)}</div>
+              <div class="hist-meta">
+                <span><strong style="color:#0f172a">${s.questions.length}</strong> questões</span>
+                <span>•</span>
+                <span>Respondidas: <strong style="color:#0f172a">${st.answered}</strong></span>
+                ${st.answered ? '<span>•</span><span style="font-weight:900;color:#047857">' + st.correct + '/' + st.answered + ' acertos (' + st.accuracy + '%)</span>' : ''}
+              </div>
+            </div>
+          </div>
+
+          <div class="hist-actions" style="padding:0 16px 16px" onclick="event.stopPropagation()">
+            <button class="btn btn-primary btn-sm" onclick="startSimulado(${s.id})">${st.done ? '▶ Ver / resolver' : st.answered ? '▶ Continuar prova' : '▶ Iniciar prova'}</button>
+            <button class="btn btn-ghost btn-sm" onclick="restartBattery(${s.id})" title="Zerar respostas e refazer">🔄 Reiniciar bateria</button>
+            <button class="btn btn-ghost btn-sm" onclick="promptRename(${s.id})">✏️ Renomear</button>
+            <button class="btn btn-ghost btn-sm" style="color:#be123c;border-color:#fecdd3;background:#fff1f2" onclick="confirmDelete(${s.id})">🗑️ Apagar</button>
+            <button class="btn btn-ghost btn-sm" onclick="toggleHist(${s.id})">${expanded ? '▲ Recolher' : '▼ Expandir questões'}</button>
+          </div>
+
+          ${expanded ? `
+          <div class="hist-detail fade-in">
+            <div style="font-size:11px;font-weight:900;color:#475569;margin-bottom:12px">Bateria de questões (${s.questions.length} itens):</div>
+            <div style="display:flex;flex-direction:column;gap:14px">
+              ${s.questions.map((q, i) => {
+                const ans = (s.answers || []).find(x => x.qid === q.id);
+                return `
+                <div class="card" style="padding:15px;box-shadow:none">
+                  <div style="display:flex;justify-content:space-between;gap:9px;align-items:center;margin-bottom:10px">
+                    <span class="q-num">QUESTÃO ${i + 1}</span>
+                    <div style="display:flex;gap:7px;flex-wrap:wrap">
+                      ${ans ? `<span class="tag ${ans.isCorrect ? 'tag-done' : 'tag-progress'}" style="${ans.isCorrect ? '' : 'background:#ffe4e6;color:#be123c;border-color:#fecdd3'}">${ans.isCorrect ? '✓ ACERTOU' : '✕ ERROU (' + ans.letter + ')'}</span>` : ''}
+                      <span class="badge badge-green">GABARITO: (${q.correctOption})</span>
+                    </div>
+                  </div>
+                  <div class="fcc-text" style="font-family:Georgia,serif;white-space:pre-line;font-size:13px;color:#0f172a">${esc(q.statement)}</div>
+                  <div class="opt-stack" style="margin-top:11px">
+                    ${LETTERS.map(l => `
+                      <div class="opt ${l === q.correctOption ? 'correct' : ans && l === ans.letter ? 'wrong' : 'dim'}" style="padding:10px 12px;font-size:12px">
+                        <div class="letter" style="width:24px;height:24px;font-size:10px">${l}</div>
+                        <div class="txt fcc-text">${esc(q.options[l])}</div>
+                      </div>`).join('')}
+                  </div>
+                  ${q.directFoundation ? `
+                  <div class="found-box" style="margin-top:11px">
+                    <div class="k">Fundamento / resolução</div>
+                    <div class="v" style="font-size:11px">${esc(q.directFoundation)}</div>
+                  </div>` : ''}
+                </div>`;
+              }).join('')}
+            </div>
+          </div>` : ''}
+        </article>`;
+      }).join('')}
+    `}
+  </div>`;
+}
+
+function toggleHist(id) {
+  state.histExpanded[id] = !state.histExpanded[id];
+  render();
+}
+function confirmDelete(id) {
+  const s = getSession(id);
+  if (!s) return;
+  openModal(`
+    <div class="modal-head">
+      <div style="display:flex;gap:10px;align-items:center">
+        <div style="width:38px;height:38px;border-radius:13px;background:rgba(244,63,94,.2);color:#fda4af;display:flex;align-items:center;justify-content:center">🗑️</div>
+        <div><div style="font-size:15px;font-weight:900">Apagar caderno?</div><div class="small-note" style="color:#94a3b8">Esta ação não pode ser desfeita.</div></div>
+      </div>
+    </div>
+    <div class="modal-body">
+      <p class="fcc-text" style="font-size:12.5px;color:#475569;margin:0">Todas as questões e respostas do caderno <strong>“${esc(s.title)}”</strong> serão removidas permanentemente deste navegador.</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-sm" style="background:#e11d48;color:#fff" onclick="doDelete(${id})">Sim, apagar caderno</button>
+    </div>`);
+}
+function doDelete(id) {
+  state.sessions = state.sessions.filter(s => s.id !== id);
+  saveSessions();
+  LS.del('fcc_sim_' + id);
+  if (state.sim && state.sim.sessionId === id) { stopTimer(); state.sim = null; }
+  closeModal();
+  render();
+  toast('Caderno apagado com sucesso 🗑️');
+}
+
+/* =====================================================================
+   MODAIS (Ajustes / Ajuda)
+   ===================================================================== */
+function openModal(html) {
+  document.getElementById('modalRoot').innerHTML = `<div class="modal-overlay" onclick="if(event.target===this)closeModal()"><div class="modal">${html}</div></div>`;
+}
+function closeModal() { document.getElementById('modalRoot').innerHTML = ''; }
+
+function openSettings() {
+  const st = state.settings;
+  openModal(`
+    <div class="modal-head">
+      <div style="display:flex;gap:10px;align-items:center">
+        <div style="width:38px;height:38px;border-radius:13px;background:#2563eb;display:flex;align-items:center;justify-content:center">⚙️</div>
+        <div><div style="font-size:15px;font-weight:900">Configurações de IA</div><div class="small-note" style="color:#94a3b8">Chave Gemini, modelo e tipografia</div></div>
+      </div>
+      <button class="icon-btn" style="width:32px;height:32px" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="margin-bottom:16px">
+        <label class="field-label">🔑 Chave da API Gemini</label>
+        <input type="password" id="setKey" value="${esc(st.apiKey)}" placeholder="Cole sua chave da API Gemini (AI Studio)">
+        <p class="small-note" style="margin:7px 0 0">A chave fica guardada apenas neste navegador (localStorage) e é usada somente para chamar a API do Gemini. Em produção, prefira restringir a chave por domínio no Google AI Studio.</p>
+      </div>
+
+      <div style="margin-bottom:16px">
+        <label class="field-label">🧠 Modelo de inteligência artificial</label>
+        <select id="setModel">
+          ${[['gemini-3.5-flash-lite', 'Gemini 3.5 Flash Lite (mais rápido)'], ['gemini-3.6-flash', 'Gemini 3.6 Flash (melhor fundamentação)'], ['gemini-3.5-flash', 'Gemini 3.5 Flash (equilibrado)'], ['gemini-3.8-flash', 'Gemini 3.8 Flash (última geração)']]
+            .map(m => `<option value="${m[0]}" ${st.model === m[0] ? 'selected' : ''}>${m[1]}</option>`).join('')}
+        </select>
+      </div>
+
+      <div>
+        <label class="field-label">🔤 Tipografia de leitura</label>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <div class="font-ctrl" style="border-color:#e2e8f0;background:#f8fafc">
+            <button onclick="setFont(-1);refreshSettingsUI()" style="color:#475569">A−</button>
+            <div class="size-label" style="color:#334155">${st.fontSize}px</div>
+            <button onclick="setFont(1);refreshSettingsUI()" style="color:#475569">A+</button>
+            <div class="divider" style="background:#e2e8f0"></div>
+            <button onclick="toggleFamily();refreshSettingsUI()" style="color:#475569;font-family:Georgia,serif">Aa</button>
+          </div>
+          <span class="small-note">A preferência é salva automaticamente neste dispositivo.</span>
+        </div>
+      </div>
+
+      <div class="alert alert-info" style="margin-top:16px">
+        <span>💾</span>
+        <div><strong>Esta é a versão HTML permanente.</strong><br>Seus cadernos, respostas e configurações ficam salvos neste navegador (localStorage) — sem servidor e sem banco de dados. Exporte/importe seus dados pelo botão abaixo se trocar de dispositivo.</div>
+      </div>
+
+      <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:12px">
+        <button class="btn btn-ghost btn-sm" onclick="exportData()">⬇️ Exportar meus dados (JSON)</button>
+        <button class="btn btn-ghost btn-sm" onclick="document.getElementById('importDataInput').click()">⬆️ Importar dados</button>
+        <input type="file" id="importDataInput" accept="application/json" style="display:none" onchange="importData(this.files[0])">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()">Cancelar</button>
+      <button class="btn btn-primary btn-sm" onclick="saveSettingsUI()">Salvar configurações</button>
+    </div>`);
+}
+function refreshSettingsUI() {
+  const lbl = document.querySelector('.modal .size-label');
+  if (lbl) lbl.textContent = state.settings.fontSize + 'px';
+}
+function saveSettingsUI() {
+  const k = document.getElementById('setKey');
+  const m = document.getElementById('setModel');
+  if (k) state.settings.apiKey = k.value.trim();
+  if (m) state.settings.model = m.value;
+  saveSettings();
+  closeModal();
+  render();
+  toast('Configurações salvas ⚙️');
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify({ sessions: state.sessions, settings: state.settings }, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'especialista-fcc-dados-' + new Date().toISOString().slice(0, 10) + '.json';
+  a.click();
+  toast('Dados exportados com sucesso ⬇️');
+}
+function importData(file) {
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const data = JSON.parse(r.result);
+      if (Array.isArray(data.sessions)) state.sessions = data.sessions;
+      if (data.settings) state.settings = { ...state.settings, ...data.settings };
+      saveSessions();
+      saveSettings();
+      closeModal();
+      render();
+      toast('Dados importados com sucesso ⬆️');
+    } catch (e) { toast('Arquivo inválido.'); }
+  };
+  r.readAsText(file);
+}
+
+function openHelp() {
+  openModal(`
+    <div class="modal-head">
+      <div style="display:flex;gap:10px;align-items:center">
+        <div style="width:38px;height:38px;border-radius:13px;background:#2563eb;display:flex;align-items:center;justify-content:center">🛡️</div>
+        <div><div style="font-size:15px;font-weight:900">Diretrizes do Especialista FCC</div><div class="small-note" style="color:#94a3b8">Padrão de qualidade oficial — Nível Médio</div></div>
+      </div>
+      <button class="icon-btn" style="width:32px;height:32px" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <h4 style="margin:0 0 10px;font-size:13px;font-weight:900">Fluxo obrigatório em 3 etapas</h4>
+      <div style="display:flex;flex-direction:column;gap:9px">
+        <div class="panel"><h4>1️⃣ Etapa 1 — Raio-X FCC</h4><p class="small-note">Diagnóstico dos últimos 3 a 5 anos: frequência (Alta, Média ou Baixa), padrão típico de cobrança (casos práticos vs. literalidade), artigos mais visados e mapeamento de pegadinhas comuns.</p></div>
+        <div class="panel"><h4>2️⃣ Etapa 2 — Questões inéditas</h4><p class="small-note">Nível médio rigoroso, 5 alternativas (A–E), tom sóbrio e formal da FCC, distratores verossímeis e equilibrados — nunca alternativas absurdas.</p></div>
+        <div class="panel"><h4>3️⃣ Etapa 3 — Gabarito comentado</h4><p class="small-note">Gabarito oficial, fundamento direto (artigo de lei, súmula ou norma gramatical) e análise alternativa por alternativa dizendo exatamente onde a banca inseriu o erro.</p></div>
+      </div>
+
+      <h4 style="margin:18px 0 10px;font-size:13px;font-weight:900">Foco por disciplina (nível médio FCC)</h4>
+      <div class="grid-2" style="gap:9px">
+        <div class="panel"><h4>📖 Língua Portuguesa</h4><p class="small-note">Concordância com sujeito posposto/partitivo, crase (casos proibidos e facultativos), regência verbal/nominal, reescrita com manutenção de sentido e pontuação.</p></div>
+        <div class="panel"><h4>⚖️ Direito Constitucional & Administrativo</h4><p class="small-note">Literalidade da CF/88, Lei 8.112/90, Lei 9.784/99 e Lei 14.133/21, contextualizadas em situações práticas do servidor público.</p></div>
+        <div class="panel"><h4>💡 Raciocínio Lógico</h4><p class="small-note">Equivalências, negações de proposições compostas, diagramas lógicos, sequências e problemas aritméticos situacionais.</p></div>
+        <div class="panel"><h4>📚 Regimentos & Legislação</h4><p class="small-note">Prazos, composição de órgãos fracionários, competências, trâmites de recursos, ética (Decreto 1.171/94) e LAI (Lei 12.527/11).</p></div>
+      </div>
+
+      <div class="alert alert-info" style="margin-top:16px">
+        <span>ℹ️</span>
+        <div><strong>Como funciona esta versão HTML</strong><br>Arquivo único, sem servidor. Configure sua chave do Gemini em "Ajustes". Tudo (cadernos, respostas e progresso) fica salvo neste navegador e pode ser exportado/importado em JSON.</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-dark btn-sm" onclick="closeModal()">Entendido</button>
+    </div>`);
+}
+
+/* =====================================================================
+   RENDER PRINCIPAL
+   ===================================================================== */
+function render() {
+  renderNav();
+  renderStatus();
+  const main = document.getElementById('main');
+  let html = '';
+  switch (state.tab) {
+    case 'generator': html = renderGenerator(); break;
+    case 'pdf': html = renderPdf(); break;
+    case 'simulado': html = renderSimulado(); break;
+    case 'erros': html = renderErros(); break;
+    case 'stats': html = renderStats(); break;
+    case 'history': html = renderHistory(); break;
+    default: html = renderGenerator();
+  }
+  main.innerHTML = html + `
+    <div class="footer" style="margin:28px -12px -120px;border-radius:0">
+      <div class="inner">
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+          <strong style="color:#fff">Especialista FCC</strong><span style="color:#c9a227">•</span>
+          <span>Nível Médio — TRTs, TREs, TRFs, TJs e Administrativos</span>
+        </div>
+        <div>Versão HTML permanente • Raio-X • Questões inéditas • Engenharia de distratores</div>
+      </div>
+    </div>`;
+
+  // Reaplica passo de loading se necessário
+  const ls = document.getElementById('loadSteps');
+  if (ls && state.loading) renderLoadSteps(ls);
+
+  // Drag & drop
+  const dz = document.getElementById('dropZone');
+  if (dz) {
+    dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
+    dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+    dz.addEventListener('drop', e => {
+      e.preventDefault();
+      dz.classList.remove('over');
+      const f = e.dataTransfer.files && e.dataTransfer.files[0];
+      if (f) handlePdfFile(f);
+    });
+  }
+}
+
+/* ---------------- Boot ---------------- */
+state.genCount = 3;
+
+// Garante a chave do usuário embutida no arquivo (sem pedir configuração inicial)
+if (!state.settings.apiKey) {
+  state.settings.apiKey = DEFAULT_API_KEY;
+  saveSettings();
+}
+
+applyFont();
+render();
+
+// Verifica se há simulado pausado pendente
+const pending = state.sessions.find(s => {
+  const st = sessionStats(s);
+  return st.answered > 0 && !st.done;
+});
+if (pending) {
+  setTimeout(() => toast('Você tem um caderno em andamento: “' + pending.title.slice(0, 40) + '”. Retome pelo Histórico ⏸️', 4200), 700);
+}
+
+/* =====================================================================
+   TELA CHEIA / APP WEB (PWA) — instalar e abrir sem barras do navegador
+   ===================================================================== */
+
+// Detecta se já está rodando como app em tela cheia (standalone)
+function isStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches ||
+         window.matchMedia('(display-mode: fullscreen)').matches ||
+         window.navigator.standalone === true;
+}
+
+// Service worker REAL (/sw.js) — habilita instalação e uso offline.
+// O manifest (/manifest.json) e os ícones PNG já estão declarados no <head>.
+(function registerAppShell() {
+  try {
+    if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(function () { /* sem SW: o app continua funcionando */ });
+      });
+    }
+  } catch (e) { /* ignora quando aberto via file:// */ }
+})();
+
+// Captura o evento de instalação (Android/Chrome)
+let deferredInstall = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstall = e;
+  if (!isStandalone()) showFsBanner();
+});
+window.addEventListener('appinstalled', () => { deferredInstall = null; hideFsBanner(); });
+
+// Tenta entrar em tela cheia real (Fullscreen API) — funciona em Android e após gesto do usuário
+function requestFs() {
+  const el = document.documentElement;
+  const fn = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+  if (fn) { try { return fn.call(el); } catch (e) {} }
+  return null;
+}
+
+// Instala como app OU entra em tela cheia
+async function enterFullscreen() {
+  if (deferredInstall) {
+    deferredInstall.prompt();
+    try { await deferredInstall.userChoice; } catch (e) {}
+    deferredInstall = null;
+    hideFsBanner();
+    return;
+  }
+  const p = requestFs();
+  if (p && p.then) { p.then(hideFsBanner).catch(() => {}); }
+  else if (isIOS()) { openIosInstall(); }
+  else { hideFsBanner(); }
+}
+
+function isIOS() {
+  return /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+    (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+// Banner discreto para ativar tela cheia / instalar
+function showFsBanner() {
+  if (isStandalone() || document.getElementById('fsBanner')) return;
+  if (LS.get('fcc_fs_dismissed', false)) return;
+  const ios = isIOS();
+  const div = document.createElement('div');
+  div.id = 'fsBanner';
+  div.className = 'fs-banner';
+  div.innerHTML = `
+    <div class="fs-inner">
+      <div class="fs-txt">
+        <strong>${ios ? 'Remover as barras do Safari' : 'Abrir em tela cheia'}</strong>
+        <span>${ios ? 'Toque em Compartilhar ↑ e "Adicionar à Tela de Início".' : 'Instale como aplicativo para usar sem as barras do navegador.'}</span>
+      </div>
+      <div class="fs-actions">
+        <button class="fs-x" onclick="dismissFsBanner()" title="Agora não">✕</button>
+        <button class="fs-go" onclick="${ios ? 'openIosInstall()' : 'enterFullscreen()'}">${ios ? 'Como fazer' : 'Ativar'}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(div);
+}
+function hideFsBanner() { const b = document.getElementById('fsBanner'); if (b) b.remove(); }
+function dismissFsBanner() { LS.set('fcc_fs_dismissed', true); hideFsBanner(); }
+
+// Instruções de instalação para iOS (Safari não suporta beforeinstallprompt)
+function openIosInstall() {
+  openModal(`
+    <div class="modal-head">
+      <div style="display:flex;gap:10px;align-items:center">
+        <div style="width:38px;height:38px;border-radius:13px;background:#2563eb;display:flex;align-items:center;justify-content:center">📲</div>
+        <div><div style="font-size:15px;font-weight:900">Abrir em tela cheia (iPhone/iPad)</div><div class="small-note" style="color:#94a3b8">Sem as barras do Safari</div></div>
+      </div>
+      <button class="icon-btn" style="width:32px;height:32px" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert alert-warn" style="margin-bottom:14px">
+        <span>ℹ️</span>
+        <div>No iPhone/iPad, o Safari <strong>só esconde as barras (voltar, compartilhar, recarregar)</strong> quando o app é aberto pelo <strong>ícone na tela de início</strong>. Siga os passos abaixo — leva 10 segundos:</div>
+      </div>
+      <ol style="margin:0;padding-left:20px;font-size:13.5px;line-height:2.1;color:#334155">
+        <li>Toque no botão <strong>Compartilhar</strong> <span style="font-size:17px">􀈂</span> (o quadrado com a seta para cima) na barra inferior do Safari.</li>
+        <li>Role e escolha <strong>“Adicionar à Tela de Início”</strong>.</li>
+        <li>Toque em <strong>“Adicionar”</strong> no canto superior direito.</li>
+        <li>Feche o Safari e abra o app pelo novo ícone <strong>📘 Especialista FCC</strong>.</li>
+      </ol>
+      <div class="alert alert-ok" style="margin-top:14px"><span>✅</span><div>Pronto! Ao abrir pelo ícone, o app ocupa a <strong>tela inteira</strong>, sem nenhuma barra do navegador.</div></div>
+      <div class="alert alert-info" style="margin-top:10px"><span>🤖</span><div>No <strong>Android/Chrome</strong>: menu <strong>⋮ → “Instalar app”</strong> (ou toque em “Ativar” no banner).</div></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost btn-sm" onclick="dismissFsBanner();closeModal()">Não mostrar novamente</button>
+      <button class="btn btn-dark btn-sm" onclick="closeModal()">Entendi</button>
+    </div>`);
+}
+
+// Ao abrir em telas pequenas, oferece tela cheia; em standalone já esconde qualquer banner
+if (!isStandalone()) {
+  if (window.matchMedia('(max-width: 900px)').matches) {
+    // No iPhone/iPad, abre o passo a passo automaticamente na 1ª visita (Safari não instala sozinho)
+    if (isIOS() && !LS.get('fcc_ios_hint_seen', false) && location.protocol.startsWith('http')) {
+      LS.set('fcc_ios_hint_seen', true);
+      setTimeout(openIosInstall, 1200);
+    } else {
+      setTimeout(showFsBanner, 1500);
+    }
+  }
+} else {
+  document.documentElement.classList.add('is-standalone');
+}
+</script>
+</body>
+</html>

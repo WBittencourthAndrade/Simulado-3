@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+:root {
+  --fcc-fs: 16px;
+  --fcc-ff: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --fcc-gold: #c9a227;
+  --fcc-navy: #0b1220;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #f4f6fb;
+  color: #0b1220;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Reading content: respects the user-selected font size + family and is justified */
+.fcc-text {
+  font-family: var(--fcc-ff);
+  font-size: var(--fcc-fs);
+  line-height: 1.7;
+  text-align: justify;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  letter-spacing: -0.005em;
+}
+
+.fcc-text-nojustify {
+  text-align: left;
+  hyphens: none;
+  -webkit-hyphens: none;
+}
+
+/* Premium soft scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+  border: 2px solid #f4f6fb;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Strikethrough style for eliminated options */
+.option-eliminated {
+  text-decoration: line-through;
+  opacity: 0.5;
+  filter: grayscale(70%);
+}
+
+/* Subtle fade/slide-in animation */
+@keyframes fccFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.fcc-fade-in {
+  animation: fccFadeIn 0.4s ease-out both;
+}
+
+/* Print media: only the booklet */
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .page-break {
+    page-break-before: always;
+  }
+}
