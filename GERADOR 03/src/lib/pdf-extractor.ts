@@ -1,5 +1,5 @@
 import { PDFParse } from "pdf-parse";
-import { DEFAULT_GEMINI_API_KEY } from "./gemini";
+import { DEFAULT_GEMINI_API_KEY, geminiBaseUrl } from "./gemini";
 
 export interface ParsedOptionSet {
   A: string;
@@ -209,7 +209,7 @@ async function callGeminiRaw(
 
   for (const model of models) {
     try {
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${keyToUse}`;
+      const url = `${geminiBaseUrl(keyToUse)}/v1beta/models/${model}:generateContent`;
       const payload = {
         contents: [{ role: "user", parts }],
         generationConfig: {
@@ -219,7 +219,7 @@ async function callGeminiRaw(
       };
       const response = await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-goog-api-key": keyToUse },
         body: JSON.stringify(payload),
       });
       if (!response.ok) {
